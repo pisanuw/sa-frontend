@@ -15,6 +15,16 @@ API contract name the matching backend release.
   (`en-ueb-g1.ctb`) by 82 stored cases (`src/braille/fixtures/`; regenerate with
   `node scripts/braille-fixtures.mjs`) and, when liblouis is installed, live.
 - Tactile (flowcharts): **Download braille key (.brf)** next to the graphic, and a key table on the page.
+- Math in long descriptions: write LaTeX between dollar signs (`$a^2+b^2=c^2$`, or `$$…$$` on its own
+  line). The Summary view draws it with MathJax 4: each formula is read aloud, can be explored by keyboard,
+  and gives braille displays its Nemeth braille. The braille file writes math in Nemeth Code between the
+  Nemeth Code indicators. Money such as "$5 and $10" is left alone. MathJax is served from this site
+  (copied into `dist/mathjax/` by the build, about 10 MB, loaded only on pages with math), never from a
+  CDN. TeX that could add links or styles (`\href`, `\style`, `\class` and similar) is shown as source.
+  The editor's long description explains how to write math. Credits for MathJax and the Speech Rule
+  Engine (Apache 2.0) in the footer, About page and LICENSE.
+- `react-markdown` is now a declared dependency (it was used but only installed through
+  `@uiw/react-md-editor`).
 - Charts: **What you will hear**, a written description of the sonification beside the play button (how
   many notes, what pitch stands for, highest and lowest, start and end, rising or falling), for readers
   who cannot hear it. Built from the same spec the player uses (`src/sonification/describe.ts`).

@@ -119,14 +119,30 @@ alt text, the long description and, for flowcharts, the tactile graphic's key.
 ## Phase 2: math
 
 Equations are the biggest missing piece of STEM content. Slice: an instructor types LaTeX; a
-student hears it spoken, explores it piece by piece by keyboard, and gets it in Nemeth or UEB
-technical braille in the same `.brf`.
+student hears it spoken, explores it piece by piece by keyboard, and gets it in Nemeth braille in
+the same `.brf`.
 
-- Math in long descriptions: `$…$` and `$$…$$` in the Markdown are rendered as MathML.
-- Speech (ClearSpeak or MathSpeak), keyboard exploration of subexpressions, and Nemeth braille.
-- Optional later: picture of an equation → LaTeX, through the same opt-in AI consent as chart images.
+- [x] Math in long descriptions: `$…$` and `$$…$$` (Pandoc's rules, so "$5 and $10" stays money)
+      are drawn by MathJax 4 on the Summary view. Each formula is read aloud (ClearSpeak), can be
+      explored by keyboard (arrow keys), and carries Nemeth braille for braille displays
+      (`aria-braillelabel`). The editor says how to write math.
+- [x] The braille file writes math in Nemeth Code between the opening Nemeth Code indicator (⠸⠩)
+      and the Nemeth Code terminator (⠸⠱), with a transcriber's note; math that cannot be
+      converted stays as LaTeX, and the note says so.
+- [x] MathJax is served from this site (`mathjaxAssets` in `vite.config.ts`), not a CDN, so a
+      campus can host the whole thing and readers' browsers make no outside requests for math.
+- [x] TeX that could add links, classes or styles (`\href`, `\style`, `\class`, …) is shown as
+      source and never reaches MathJax, and MathJax's `ui/safe` filter is on as well, because
+      anyone (including guests) can publish a description.
+- [ ] Math in alt text, node labels and chart titles on screen (the braille file already handles
+      them); plain-text and HTML exports with the spoken form.
+- [ ] Review of the Nemeth output and the switch indicators by a certified Nemeth transcriber.
+- [ ] Optional later: picture of an equation → LaTeX, through the same opt-in AI consent as chart
+      images.
 
-Library choice (decision needed, question 3):
+Library choice (question 3). Chosen on 2026-11-10 with the recommendation below because nobody
+had answered within 15 minutes. To undo: revert the "math" commits on this branch; nothing
+outside the frontend changed.
 
 | Option | Gives | Cost |
 |---|---|---|
@@ -135,6 +151,12 @@ Library choice (decision needed, question 3):
 | Native MathML only | Smallest; browsers render MathML Core | Speech quality depends on each screen reader; no braille file |
 
 Recommendation: MathJax 4, lazy-loaded, because exploration and braille come tested.
+
+Cost as built: about 10 MB of MathJax files in the deployed site (all speech languages are kept so
+MathJax's menu can switch them), fetched only by pages that show math. The site's own math code
+adds a few kilobytes plus chunks loaded on demand. MathJax 4.1.3 depends on a release candidate of
+the Speech Rule Engine (5.0.0-rc.4); `package.json` pins that exact version so the braille file
+and MathJax use the same rules.
 
 ## Phase 3: more STEM image types
 
@@ -190,7 +212,8 @@ Turns the tool into something a campus can run its accessibility service on.
 2. Default braille grade for downloads. Recommendation: uncontracted UEB now (it is what we can
    verify in the browser, and is often preferred for code and technical text), contracted UEB from
    liblouis once the backend route exists, with a choice on the page.
-3. Math library: see the table in Phase 2. Recommendation: MathJax 4.
+3. Math library: see the table in Phase 2. Recommendation: MathJax 4. Went ahead with it on
+   2026-11-10 (no answer within 15 minutes); revert the math commits to undo.
 4. Which campus and which course pilots Phase 4 first, and who at the disability resource office
    takes part.
 5. Who reviews braille and tactile output (certified transcriber, tactile graphics specialist),

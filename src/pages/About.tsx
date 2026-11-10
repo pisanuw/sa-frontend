@@ -6,6 +6,8 @@ const ARBORETUM_URL = "https://github.com/ritesh-kanchi/Arboretum";
 const ARBORETUM_PAPER_URL = "https://dl.acm.org/doi/10.1145/3772318.3791656";
 const OLLI_URL = "https://github.com/umwelt-data/olli";
 const OLLI_DOCS_URL = "https://umwelt-data.github.io/olli/";
+const MATHJAX_URL = "https://www.mathjax.org/";
+const SRE_URL = "https://github.com/Speech-Rule-Engine/speech-rule-engine";
 //const BRIANNA_URL = "https://www.briannawimer.com/";
 
 const About: React.FC = () => {
@@ -124,6 +126,26 @@ const About: React.FC = () => {
             </a>
           </div>
         </section>
+        {/* Math */}
+        <section className="about__section" aria-labelledby="math-title">
+          <h2 id="math-title" className="about__h2">
+            Math and braille
+          </h2>
+          <p className="about__p">
+            Math written in a long description is drawn with{" "}
+            <a className="about__link" href={MATHJAX_URL} target="_blank" rel="noopener noreferrer">
+              MathJax<span className="sr-only"> (opens in a new tab)</span>
+            </a>
+            , which reads it aloud, lets people explore it piece by piece with the keyboard, and gives
+            braille displays the Nemeth braille. The braille file of every STEM image uses uncontracted
+            Unified English Braille for text and Nemeth Code for math, made with the{" "}
+            <a className="about__link" href={SRE_URL} target="_blank" rel="noopener noreferrer">
+              Speech Rule Engine<span className="sr-only"> (opens in a new tab)</span>
+            </a>
+            . Both are open source under the Apache 2.0 license.
+          </p>
+        </section>
+
         {/* ALT text (to be added) */}
 
         {/* Who it's for */}

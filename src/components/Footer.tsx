@@ -7,6 +7,8 @@ const CONTACT_EMAIL = "stem-accessibility@uw.edu";
 const ARBORETUM_URL = "https://github.com/ritesh-kanchi/Arboretum";
 const ARBORETUM_PAPER_URL = "https://dl.acm.org/doi/10.1145/3772318.3791656";
 const OLLI_URL = "https://github.com/umwelt-data/olli";
+const MATHJAX_URL = "https://www.mathjax.org/";
+const SRE_URL = "https://github.com/Speech-Rule-Engine/speech-rule-engine";
 
 const Footer: React.FC = () => {
   const year = new Date().getFullYear();
@@ -78,6 +80,30 @@ const Footer: React.FC = () => {
             <span className="sr-only"> (opens in a new tab)</span>
           </a>{" "}
           from the MIT Visualization Group, used under the BSD 3-Clause license.
+        </p>
+
+        <p className="site-footer__credit">
+          Math uses{" "}
+          <a
+            href={MATHJAX_URL}
+            className="site-footer__link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            MathJax
+            <span className="sr-only"> (opens in a new tab)</span>
+          </a>{" "}
+          and the{" "}
+          <a
+            href={SRE_URL}
+            className="site-footer__link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Speech Rule Engine
+            <span className="sr-only"> (opens in a new tab)</span>
+          </a>
+          , used under the Apache 2.0 license.
         </p>
 
         <div className="site-footer__sub">
