@@ -33,6 +33,8 @@ API contract name the matching backend release.
 - Column auto-mapping: the line preset no longer takes the time column as the value (which also drove the
   sonification's pitch), category presets no longer keep a stale time column, and columns chosen for an
   earlier file or preset are cleared. Sonification with no time column now uses row order.
+- Primary buttons (`.btn`) use dark text on the orange accent. White text was about 2.6:1, below WCAG AA
+  (4.5:1); dark text is about 6.6:1 (8.9:1 on hover).
 
 ## [0.3.0] — 2026-10-11
 
