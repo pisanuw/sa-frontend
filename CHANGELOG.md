@@ -7,6 +7,18 @@ API contract name the matching backend release.
 ## [Unreleased]
 
 ### Added
+- Braille: a **Braille (.brf)** representation on shared pages and in the owner's preview, and
+  **Braille (.brf)** in Export. The file has the title, a transcriber's note, the alt text, the long
+  description and (when the tactile view is the numbered one) the tactile graphic's key, in uncontracted
+  Unified English Braille, 40 cells by 25 lines, with BANA-style headings, paragraphs and nested lists. It
+  is made in the browser (`src/braille/`), needs no account, and is checked against liblouis 3.29
+  (`en-ueb-g1.ctb`) by 82 stored cases (`src/braille/fixtures/`; regenerate with
+  `node scripts/braille-fixtures.mjs`) and, when liblouis is installed, live.
+- Tactile (flowcharts): **Download braille key (.brf)** next to the graphic, and a key table on the page.
+- CI (GitHub Actions): lint, unit tests, type check and build on every push and pull request, with
+  liblouis installed for the braille comparison.
+- `docs/roadmap.md`: plan for braille parity, math, more STEM image types, campus workflow and
+  self-hosting.
 - Charts: a **Navigable chart** view built with [Olli](https://github.com/umwelt-data/olli) (BSD 3-Clause)
   that lets screen reader users explore a chart as an outline and open its data as a table. Loaded on demand.
 - Charts: a **Data table** with the uploaded values as a real HTML table.
@@ -25,11 +37,29 @@ API contract name the matching backend release.
   lost, and sends your session token so the image is saved under your account.
 
 ### Changed
+- Tactile (flowcharts): the graphic is drawn at true letter-page size (portrait or landscape, whichever
+  fits better) and downloads as SVG instead of a screen-resolution PNG. Braille is drawn as dots of
+  standard size and spacing (1.5 mm dots, 2.5 mm within a cell, 6.2 mm between cells) instead of
+  braille characters in whatever font the browser had. Shapes are sized to hold their number, lines stop
+  short of the shapes, short line labels such as "Yes" and "No" are written on the line in braille, and
+  longer ones are keyed by letter. The page warns when shapes are too close to tell apart by touch.
+- Primary buttons (`.btn`) use dark text on the orange accent. White text was about 2.6:1, below WCAG AA;
+  dark text is about 6.6:1.
+- Lint: `vendor/` (the Arboretum submodule) is no longer linted; `any` is a warning rather than an
+  error; unused values named `_…` and props dropped with `{ a, ...rest }` are allowed. `npm run lint` now
+  passes (warnings remain).
 - CSV upload reads ordinary CSV files: a header row, any column names, blank cells, quoted commas, and
   title lines above the table. It reports how many rows and columns it loaded, or why it found none.
   Previously only one fixed layout worked and everything else produced an empty dataset.
 
 ### Fixed
+- Tactile (flowcharts): numbers had no braille number sign, so shape 1 read as the letter "a" and shape 10
+  as "aj". Line labels were numbered from 1 again on the graphic but after the shapes in the key, so the
+  label "Yes" could be 1 on paper (the same as shape 1) and 6 in the key. A one-step flowchart produced
+  invalid coordinates.
+- `package-lock.json` was out of sync with `package.json`, so `npm ci` failed.
+- The navigable list (`NavigableList`) and the Grafari results page called React hooks after an early
+  return; they would crash if their data arrived after the first render.
 - Column auto-mapping: the line preset no longer takes the time column as the value (which also drove the
   sonification's pitch), category presets no longer keep a stale time column, and columns chosen for an
   earlier file or preset are cleared. Sonification with no time column now uses row order.
