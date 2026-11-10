@@ -15,6 +15,9 @@ API contract name the matching backend release.
   (`en-ueb-g1.ctb`) by 82 stored cases (`src/braille/fixtures/`; regenerate with
   `node scripts/braille-fixtures.mjs`) and, when liblouis is installed, live.
 - Tactile (flowcharts): **Download braille key (.brf)** next to the graphic, and a key table on the page.
+- Charts: **What you will hear**, a written description of the sonification beside the play button (how
+  many notes, what pitch stands for, highest and lowest, start and end, rising or falling), for readers
+  who cannot hear it. Built from the same spec the player uses (`src/sonification/describe.ts`).
 - CI (GitHub Actions): lint, unit tests, type check and build on every push and pull request, with
   liblouis installed for the braille comparison.
 - `docs/roadmap.md`: plan for braille parity, math, more STEM image types, campus workflow and
@@ -57,6 +60,9 @@ API contract name the matching backend release.
   as "aj". Line labels were numbered from 1 again on the graphic but after the shapes in the key, so the
   label "Yes" could be 1 on paper (the same as shape 1) and 6 in the key. A one-step flowchart produced
   invalid coordinates.
+- Charts: the sonification player's messages ("Upload a CSV and choose a value column first", playback
+  errors) were never shown; they now appear in a status line that screen readers announce. The player
+  no longer logs on every render.
 - `package-lock.json` was out of sync with `package.json`, so `npm ci` failed.
 - The navigable list (`NavigableList`) and the Grafari results page called React hooks after an early
   return; they would crash if their data arrived after the first render.

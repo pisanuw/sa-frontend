@@ -110,8 +110,9 @@ alt text, the long description and, for flowcharts, the tactile graphic's key.
       does not change this project's license.
 - [ ] Tactile PDF for embossers (ViewPlus and others) with the braille key on its own page, as the
       BANA tactile graphics guidelines recommend.
-- [ ] Sonification: add a written "what you will hear" description beside every play button, for
-      Deaf and deafblind readers.
+- [x] Sonification: a written "What you will hear" description beside the play button (number of
+      notes, what pitch stands for, highest, lowest, start, end and direction), built from the same
+      spec the player uses. The player's messages are now shown and announced.
 - [ ] Review by a certified braille transcriber and a tactile graphics specialist before calling
       the output production-ready.
 
