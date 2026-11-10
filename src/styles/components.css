@@ -31,7 +31,8 @@
   font-weight: 600;
   font-family: var(--font-body);
   background: var(--accent);
-  color: white;
+  /* Dark text: white on the orange accent is about 2.6:1, below WCAG AA; this is about 6.6:1. */
+  color: var(--text);
   border: 1px solid transparent;
   border-radius: var(--r-sm);
   cursor: pointer;
