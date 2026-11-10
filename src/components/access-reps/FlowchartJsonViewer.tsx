@@ -58,6 +58,8 @@ async function copyToClipboard(text: string) {
 function sanitizeFilename(name: string) {
   const trimmed = name.trim();
   if (!trimmed) return "";
+  // Control characters are not allowed in file names, so matching them is the point.
+  // eslint-disable-next-line no-control-regex
   return trimmed.replace(/[<>:"/\\|?*\u0000-\u001F]/g, "-").slice(0, 120);
 }
 

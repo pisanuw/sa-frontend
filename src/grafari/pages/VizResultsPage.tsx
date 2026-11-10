@@ -37,6 +37,14 @@ const VizResultsPage: React.FC = () => {
   const [tactileSvg, setTactileSvg] = useState<string | null>(record?.tactile?.svgText ?? null);
   const [showTable, setShowTable] = useState(false);
 
+  // Stop any playing sound when leaving the page. Declared before the early return so the
+  // hook runs on every render.
+  useEffect(() => {
+    return () => {
+      sonifyHandleRef.current?.stop();
+    };
+  }, []);
+
   if (!record) {
     return (
       <div style={{ padding: 24, maxWidth: 1000, margin: "0 auto" }}>
@@ -49,11 +57,6 @@ const VizResultsPage: React.FC = () => {
   }
 
   const title = record.vizIR?.narrative?.title ?? "Grafari visualization";
-  useEffect(() => {
-  return () => {
-    sonifyHandleRef.current?.stop();
-  };
-}, []);
 
   return (
     <div style={{ padding: 24, maxWidth: 1200, margin: "0 auto" }}>
