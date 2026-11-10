@@ -8,6 +8,7 @@ import NavigableList from "./NavigableList";
 import AccessibleMarkdown from "./AccessibleMarkdown";
 import Tactile from "./TactileRenderer";
 import AltTextView from "./AltTextView";
+import BrailleView from "./BrailleView";
 import { TypedNavigable, TypedTable, TypedTactile, canRenderBrailleLabels } from "./typed/TypedViews";
 
 type Props = {
@@ -20,6 +21,8 @@ type Props = {
   imageDataUrl?: string | null;
   /** Editor route, so an empty Alt text view can link back to it. */
   editPath?: string;
+  /** Shared page address, written into the braille file. */
+  shareUrl?: string | null;
   /** View to start on, e.g. from `?view=` in the URL. Falls back to the type's default. */
   initialView?: string | null;
   onViewChange?: (view: ViewId) => void;
@@ -34,6 +37,7 @@ const RepresentationBrowser: React.FC<Props> = ({
   title,
   imageDataUrl,
   editPath,
+  shareUrl,
   initialView,
   onViewChange,
 }) => {
@@ -95,7 +99,21 @@ const RepresentationBrowser: React.FC<Props> = ({
             <NavigableList jsonData={data} />
           ))}
         {view === "tactile" &&
-          (braille ? <TypedTactile type={type} data={data} title={title} /> : <Tactile json={data} />)}
+          (braille ? (
+            <TypedTactile type={type} data={data} title={title} />
+          ) : (
+            <Tactile json={data} title={title} />
+          ))}
+        {view === "braille" && (
+          <BrailleView
+            data={data}
+            title={title}
+            shortAlt={shortAlt}
+            summary={summary}
+            includeKey={!braille}
+            shareUrl={shareUrl}
+          />
+        )}
       </div>
     </div>
   );

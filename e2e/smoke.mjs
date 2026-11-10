@@ -239,7 +239,7 @@ try {
   await sleep(300);
   const toolbarText = await text(".share-toolbar .btn, .share-toolbar .share-chip");
   check("Export: copy alt text, copy long description, download, embed", /Copy alt text/.test(toolbarText) && /Copy long description/.test(toolbarText) && /Download/.test(toolbarText) && /Copy embed code/.test(toolbarText), toolbarText);
-  check("Export: labelled 'Export as' with HTML, Markdown, Text", (await text(".share-toolbar__formats legend")) === "Export as" && (await text(".share-toolbar__radio")) === "HTML | Markdown | Text");
+  check("Export: labelled 'Export as' with HTML, Markdown, Text, Braille", (await text(".share-toolbar__formats legend")) === "Export as" && (await text(".share-toolbar__radio")) === "HTML | Markdown | Text | Braille (.brf)");
   await page.evaluate(() => {
     window.__copied = "";
     Object.defineProperty(navigator, "clipboard", { value: { writeText: async (t) => { window.__copied = t; } }, configurable: true });
@@ -256,6 +256,10 @@ try {
   await radios[1].click();
   await clickShare("Copy long description");
   check("Export: Markdown format keeps headings", (await page.evaluate(() => window.__copied)).includes("## "));
+  await radios[3].click();
+  await clickShare("Copy long description");
+  const asBraille = await page.evaluate(() => window.__copied);
+  check("Export: Braille format copies Unicode braille", /^[\u2800-\u28ff\s]+$/.test(asBraille) && asBraille.trim().length > 0, asBraille.slice(0, 20));
   await radios[0].click();
   await clickShare("Copy long description");
   check("Export: HTML format copies HTML", /<h2|<p/.test(await page.evaluate(() => window.__copied)));

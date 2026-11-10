@@ -997,6 +997,7 @@ const DiagramEditorPage = ({ guest = false }: EditorProps) => {
                 shortAlt={shortAlt}
                 summary={summary}
                 json={flowchartData}
+                diagramType={diagramType}
                 publicUrl={
                   isPublished && publicSlug
                     ? `${window.location.origin}/p/${encodeURIComponent(publicSlug)}`

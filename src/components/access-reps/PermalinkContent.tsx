@@ -45,6 +45,7 @@ const PermalinkContent: React.FC = () => {
         diagramType={data.flowchart_type}
         summary={data.summary}
         shortAlt={data.short_alt}
+        title={data.title}
         imageDataUrl={imageDataUrl}
         editPath={id ? `/editor/${encodeURIComponent(id)}` : undefined}
       />
