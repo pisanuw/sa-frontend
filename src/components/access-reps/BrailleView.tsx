@@ -1,6 +1,12 @@
-import { useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import type { FlowchartData } from "../../types/types";
-import { stemImageBraille, brfFileName, downloadBrf } from "../../braille/stemImage";
+import {
+  stemImageBraille,
+  brfFileName,
+  downloadBrf,
+  mathInStemImage,
+  nemethForMath,
+} from "../../braille/stemImage";
 import "./styles/Braille.css";
 
 type Props = {
@@ -19,9 +25,29 @@ type Props = {
  * embossers, plus a page-by-page preview for proofreading.
  */
 export default function BrailleView({ data, title, shortAlt, summary, includeKey, shareUrl }: Props) {
+  // Math is converted to Nemeth by an engine loaded only when the text has math in it.
+  const texs = useMemo(
+    () => mathInStemImage({ data, title, shortAlt, summary, includeKey }),
+    [data, title, shortAlt, summary, includeKey]
+  );
+  const texKey = texs.join("\u0000");
+  const [math, setMath] = useState<{ key: string; map: Map<string, string | null> } | null>(null);
+  useEffect(() => {
+    if (!texs.length) return;
+    let live = true;
+    nemethForMath(texs).then((map) => live && setMath({ key: texKey, map }));
+    return () => {
+      live = false;
+    };
+    // texKey stands for texs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [texKey]);
+  const mathMap = math?.key === texKey ? math.map : undefined;
+  const preparing = texs.length > 0 && !mathMap;
+
   const doc = useMemo(
-    () => stemImageBraille({ data, title, shortAlt, summary, includeKey, source: shareUrl }),
-    [data, title, shortAlt, summary, includeKey, shareUrl]
+    () => stemImageBraille({ data, title, shortAlt, summary, includeKey, source: shareUrl, math: mathMap }),
+    [data, title, shortAlt, summary, includeKey, shareUrl, mathMap]
   );
   const [status, setStatus] = useState("");
   const id = useId();
@@ -38,17 +64,19 @@ export default function BrailleView({ data, title, shortAlt, summary, includeKey
       <p>
         A braille file (.brf) for a braille display, braille notetaker or embosser. It has {contents},
         in uncontracted Unified English Braille, 40 cells by 25 lines per page.
+        {texs.length > 0 && " Math is in Nemeth Code."}
       </p>
       <div className="braille-view__actions">
         <button
           type="button"
           className="btn"
+          disabled={preparing}
           onClick={() => {
             downloadBrf(brfFileName(title), doc.brf);
             setStatus(`Downloaded ${brfFileName(title)}, ${pages} braille ${pages === 1 ? "page" : "pages"}.`);
           }}
         >
-          Download braille file (.brf)
+          {preparing ? "Preparing the math…" : "Download braille file (.brf)"}
         </button>
         <span role="status" aria-live="polite">
           {status}

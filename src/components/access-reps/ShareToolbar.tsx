@@ -6,7 +6,7 @@ import type { FlowchartData } from "../../types/types";
 import type { DiagramType } from "../../arboretum/diagramTypes";
 import { isDataStructure } from "../../arboretum/diagramTypes";
 import { canRenderBrailleLabels } from "./typed/TypedViews";
-import { brfFileName, downloadBrf, stemImageBraille } from "../../braille/stemImage";
+import { brfFileName, downloadBrf, stemImageBrailleWithMath } from "../../braille/stemImage";
 import { toUeb } from "../../braille/ueb";
 import { jsonToMermaid } from "../../services/utils";
 import {
@@ -127,15 +127,21 @@ export default function ShareToolbar({ title, shortAlt, summary, json, diagramTy
       // The numbered tactile graphic has a key; data structures with short labels print the
       // values themselves and have none.
       const type = diagramType ?? "flowchart";
-      const doc = stemImageBraille({
-        title,
-        shortAlt,
-        summary,
-        data: json,
-        includeKey: !(isDataStructure(type) && canRenderBrailleLabels(type, json)),
-        source: publicUrl,
-      });
-      downloadBrf(brfFileName(title), doc.brf);
+      setBusy(true);
+      try {
+        // Waits for the math engine only when there is math to put in Nemeth.
+        const doc = await stemImageBrailleWithMath({
+          title,
+          shortAlt,
+          summary,
+          data: json,
+          includeKey: !(isDataStructure(type) && canRenderBrailleLabels(type, json)),
+          source: publicUrl,
+        });
+        downloadBrf(brfFileName(title), doc.brf);
+      } finally {
+        setBusy(false);
+      }
     } else if (format === "text") {
       downloadTextFile(`${base}-long-description.txt`, descriptionFor("text"));
     } else if (format === "markdown") {
