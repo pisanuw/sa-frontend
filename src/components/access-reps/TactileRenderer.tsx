@@ -1,339 +1,208 @@
-import React, { useRef, type JSX } from 'react';
-import { toPng } from 'html-to-image';
-import type { FlowchartData, NodeData, EdgeData } from '../../types/types';
+import React, { useId, useMemo, useRef } from "react";
+import type { FlowchartData } from "../../types/types";
+import { flowchartKey } from "../../braille/tactileKey";
+import {
+  BRAILLE_MM,
+  TACTILE_MARGIN,
+  brailleDots,
+  centredBrailleDots,
+  layoutTactileFlowchart,
+  type TactileShape,
+} from "../../braille/tactileLayout";
+import { buildBrailleDocument } from "../../braille/document";
+import "./styles/Tactile.css";
 
-const brailleDigits = ['⠁', '⠃', '⠉', '⠙', '⠑', '⠋', '⠛', '⠓', '⠊', '⠚'];
-const toBrailleNumber = (n: number): string =>
-  n.toString().split('').map((d) => brailleDigits[+d]).join('');
+const STROKE = 0.7; // mm, outlines and lines
 
-type FlowchartLegendProps = {
-  nodes: NodeData[];
-  edges: EdgeData[];
-};
-
-type LegendItem =
-  | { type: 'node'; id: string; label: string }
-  | { type: 'edge'; label: string };
-
-
-const FlowchartLegend: React.FC<FlowchartLegendProps> = ({ nodes, edges }) => {
-  const dedupedEdgeLabels = [...new Set(edges.map((edge) => edge.label).filter(Boolean))];
-
-  const combinedList: LegendItem[] = [
-  ...nodes.map((node) => ({
-    type: 'node' as const,
-    id: node.id,
-    label: node.label || 'Unnamed Node',
-  })),
-  ...dedupedEdgeLabels.map((label) => ({
-    type: 'edge' as const,
-    label: label!,
-  })),
-];
-
-
-  return (
-    <div className="legend" style={{ marginBottom: '2rem' }}>
-      <h2>Legend</h2>
-      <ul>
-        {combinedList.map((item, idx) => (
-            <li key={item.type === 'node' ? `node-${item.id}` : `edge-${item.label}`}>
-            <strong>{idx + 1}.</strong>{' '}
-            {item.type === 'node' ? item.label : `Edge label: ${item.label}`}
-            </li>
-        ))}
-        </ul>
-
-    </div>
-  );
-};
-
-type TactileFlowchartProps = {
-  nodes: NodeData[];
-  edges: EdgeData[];
-};
-
-function normalizeCoordinates(
-  nodes: NodeData[],
-  pageWidth: number,
-  pageHeight: number,
-  margin = 50
-): NodeData[] {
-  const xs = nodes.map((n) => n.coordinates[0][0]);
-  const ys = nodes.map((n) => n.coordinates[0][1]);
-
-  const minX = Math.min(...xs);
-  const maxX = Math.max(...xs);
-  const minY = Math.min(...ys);
-  const maxY = Math.max(...ys);
-
-  const scaleX = (pageWidth - 2 * margin) / (maxX - minX);
-  const scaleY = (pageHeight - 2 * margin) / (maxY - minY);
-  const scale = Math.min(scaleX, scaleY);
-
-  return nodes.map((n) => {
-  const x = margin + (n.coordinates[0][0] - minX) * scale;
-  const y = margin + (n.coordinates[0][1] - minY) * scale;
-
-  return {
-    ...n,
-    coordinates: [[x, y], [x, y]], // duplicate point
-  };
-});
+function fileBase(title: string) {
+  return (title || "stem-image").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "stem-image";
 }
 
-const TactileFlowchart: React.FC<TactileFlowchartProps> = ({ nodes, edges }) => {
-  const shapeSize = 60;
-  const uniqueLabels = [...new Set(edges.map((e) => e.label).filter(Boolean))];
-  const edgeLabelMap = Object.fromEntries(
-    uniqueLabels.map((label, i) => [label, toBrailleNumber(i + 1)])
-  );
+function download(name: string, content: string, type: string) {
+  const url = URL.createObjectURL(new Blob([content], { type }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
-  const renderShape = (
-    x: number,
-    y: number,
-    shape: string,
-    label: string
-  ): JSX.Element => {
-    const half = shapeSize / 2;
-    const fontSize = 30;
-
-    switch (shape) {
-      case 'diamond':
-        return (
-          <g>
-            <polygon
-              points={`${x},${y - half} ${x + half},${y} ${x},${y + half} ${x - half},${y}`}
-              fill="white"
-              stroke="black"
-              strokeWidth="2"
-            />
-            <text x={x} y={y + 5} textAnchor="middle" fontSize={fontSize}>
-              {label}
-            </text>
-          </g>
-        );
-      case 'circle':
-        return (
-          <g>
-            <circle cx={x} cy={y} r={half} fill="white" stroke="black" strokeWidth="2" />
-            <text x={x} y={y + 5} textAnchor="middle" fontSize={fontSize}>
-              {label}
-            </text>
-          </g>
-        );
-      case 'stadium':
-        return (
-          <g>
-            <rect
-              x={x - half}
-              y={y - half}
-              width={shapeSize}
-              height={shapeSize}
-              rx={half}
-              ry={half}
-              fill="white"
-              stroke="black"
-              strokeWidth="2"
-            />
-            <text x={x} y={y + 5} textAnchor="middle" fontSize={fontSize}>
-              {label}
-            </text>
-          </g>
-        );
-      case 'parallelogram':
-        const skew = 20;
-        return (
-          <g>
-            <polygon
-              points={`
-                ${x - half + skew},${y - half}
-                ${x + half + skew},${y - half}
-                ${x + half - skew},${y + half}
-                ${x - half - skew},${y + half}
-              `}
-              fill="white"
-              stroke="black"
-              strokeWidth="2"
-            />
-            <text x={x} y={y + 5} textAnchor="middle" fontSize={fontSize}>
-              {label}
-            </text>
-          </g>
-        );
-      default:
-        return (
-          <g>
-            <rect
-              x={x - half}
-              y={y - half}
-              width={shapeSize}
-              height={shapeSize}
-              fill="white"
-              stroke="black"
-              strokeWidth="2"
-            />
-            <text x={x} y={y + 5} textAnchor="middle" fontSize={fontSize}>
-              {label}
-            </text>
-          </g>
-        );
+function Outline({ s }: { s: TactileShape }) {
+  const common = { fill: "#fff", stroke: "#000", strokeWidth: STROKE };
+  const x = s.cx - s.w / 2;
+  const y = s.cy - s.h / 2;
+  switch (s.kind) {
+    case "diamond":
+      return (
+        <polygon
+          {...common}
+          points={`${s.cx},${y} ${s.cx + s.w / 2},${s.cy} ${s.cx},${y + s.h} ${x},${s.cy}`}
+        />
+      );
+    case "ellipse":
+      return <ellipse {...common} cx={s.cx} cy={s.cy} rx={s.w / 2} ry={s.h / 2} />;
+    case "parallelogram": {
+      const k = 4;
+      return (
+        <polygon
+          {...common}
+          points={`${x + k},${y} ${x + s.w},${y} ${x + s.w - k},${y + s.h} ${x},${y + s.h}`}
+        />
+      );
     }
-  };
+    case "rounded":
+      return <rect {...common} x={x} y={y} width={s.w} height={s.h} rx={s.h / 2} />;
+    default:
+      return <rect {...common} x={x} y={y} width={s.w} height={s.h} />;
+  }
+}
 
-  const shortenLine = (
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-    offset: number
-  ): [number, number, number, number] => {
-    const angle = Math.atan2(y2 - y1, x2 - x1);
-    return [
-      x1 + Math.cos(angle) * offset,
-      y1 + Math.sin(angle) * offset,
-      x2 - Math.cos(angle) * offset,
-      y2 - Math.sin(angle) * offset,
-    ];
-  };
-
-  const getPerpendicularOffset = (
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-    distance = 20
-  ): [number, number] => {
-    const dx = x2 - x1;
-    const dy = y2 - y1;
-    const length = Math.sqrt(dx * dx + dy * dy);
-    if (length === 0) return [0, 0];
-    const ux = -dy / length;
-    const uy = dx / length;
-    return [ux * distance, uy * distance];
-  };
-  
+function Dots({ dots }: { dots: { cx: number; cy: number }[] }) {
   return (
-    <svg width={850} height={1100} style={{ background: 'white' }}>
-      <defs>
-        <marker
-          id="arrowhead"
-          markerWidth="10"
-          markerHeight="7"
-          refX="5"
-          refY="3.5"
-          orient="auto"
-          markerUnits="strokeWidth"
-        >
-          <polygon points="0 0, 10 3.5, 0 7" fill="black" />
-        </marker>
-      </defs>
-
-      {edges.map((edge, idx) => {
-        const source = nodes.find((n) => n.id === edge.source);
-        const target = nodes.find((n) => n.id === edge.destination);
-        if (!source || !target) return null;
-
-        const [x1, y1, x2, y2] = shortenLine(
-          source.coordinates[0][0],
-          source.coordinates[0][1],
-          target.coordinates[0][0],
-          target.coordinates[0][1],
-          40
-        );
-
-        const midX = (x1 + x2) / 2;
-        const midY = (y1 + y2) / 2;
-        const [ox, oy] = getPerpendicularOffset(x1, y1, x2, y2, 30);
-        const labelX = midX + ox;
-        const labelY = midY + oy;
-
-        const showArrow = edge.markerEnd?.type === 'arrowclosed';
-        const strokeDasharray = edge.type === 'dashed' ? '5,5' : 'none';
-
-        return (
-          <g key={idx}>
-            <line
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
-              stroke="black"
-              strokeWidth="2"
-              markerEnd={showArrow ? 'url(#arrowhead)' : undefined}
-              strokeDasharray={strokeDasharray}
-            />
-            {edge.label && edgeLabelMap[edge.label] && (
-              <text
-                x={labelX}
-                y={labelY - 5}
-                textAnchor="middle"
-                fontSize="22"
-                fontFamily="Arial, sans-serif"
-                dominantBaseline="middle"
-              >
-                {edgeLabelMap[edge.label]}
-              </text>
-            )}
-          </g>
-        );
-      })}
-
-      {nodes.map((node, idx) => {
-        const [x, y] = node.coordinates[0];
-        const shape = node.shape || 'rectangle';
-        const braille = toBrailleNumber(idx + 1);
-        return <g key={node.id}>{renderShape(x, y, shape, braille)}</g>;
-      })}
-    </svg>
+    <>
+      {dots.map((d, i) => (
+        <circle key={i} cx={d.cx} cy={d.cy} r={BRAILLE_MM.dot / 2} fill="#000" />
+      ))}
+    </>
   );
-};
-
-type DownloadButtonProps = {
-    targetRef: React.RefObject<HTMLDivElement | null>;
-  };
-  
-
-const DownloadButton: React.FC<DownloadButtonProps> = ({ targetRef }) => {
-  const handleDownload = () => {
-    if (targetRef.current) {
-      toPng(targetRef.current, {
-        cacheBust: true,
-        backgroundColor: 'white',
-        pixelRatio: 6,
-      }).then((dataUrl) => {
-        const link = document.createElement('a');
-        link.download = 'tactile-flowchart.png';
-        link.href = dataUrl;
-        link.click();
-      });
-    }
-  };
-
-  return (
-    <button onClick={handleDownload} style={{ marginTop: '1rem' }}>
-      Download Flowchart Image
-    </button>
-  );
-};
+}
 
 type TactileProps = {
   json: FlowchartData;
+  title?: string | null;
 };
 
-const Tactile: React.FC<TactileProps> = ({ json }) => {
-  const flowchartRef = useRef<HTMLDivElement>(null);
-  const { nodes, edges } = json;
-  const pageSize = { width: 850, height: 1100 }; // letter-size page
-  const normalizedNodes = normalizeCoordinates(nodes, pageSize.width, pageSize.height);
+/**
+ * Tactile graphic of a flowchart for swell paper or an embosser: numbered shapes in braille,
+ * short line labels in braille and longer ones keyed by letter, at true letter-page size. The
+ * key is shown below and can be downloaded as a braille file.
+ */
+const Tactile: React.FC<TactileProps> = ({ json, title }) => {
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const markerId = `tactile-arrow-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  const name = title?.trim() || "";
+  const key = useMemo(() => flowchartKey(json), [json]);
+  const scene = useMemo(() => layoutTactileFlowchart(json, key, name), [json, key, name]);
+
+  if (!scene) {
+    return <p>There is nothing to draw yet. Add steps to the STEM image first.</p>;
+  }
+
+  const direct = [...key.edgeLabels.entries()].filter(([, v]) => !v.keyed).map(([label]) => label);
+  const orientation = scene.width > scene.height ? "landscape" : "portrait";
+
+  const downloadSvg = () => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const copy = svg.cloneNode(true) as SVGSVGElement;
+    copy.removeAttribute("style");
+    copy.removeAttribute("class");
+    const xml = '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(copy);
+    download(`${fileBase(name)}-tactile.svg`, xml, "image/svg+xml");
+  };
+
+  const downloadKey = () => {
+    const doc = buildBrailleDocument({ title: name ? `${name}: tactile graphic key` : "Tactile graphic key", key: key.entries });
+    download(`${fileBase(name)}-tactile-key.brf`, doc.brf, "text/plain;charset=us-ascii");
+  };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <FlowchartLegend nodes={nodes} edges={edges} />
-      <div ref={flowchartRef} style={{ border: '1px black solid' }}>
-        <TactileFlowchart nodes={normalizedNodes} edges={edges} />
+    <div className="tactile">
+      <p className="tactile__hint">
+        Numbers in braille mark each shape; short line labels are written on the line and longer ones
+        get a letter. The key is below and in the braille key file. Print the SVG at 100% (not “fit to
+        page”) on {orientation} letter paper, on swell paper or a tactile embosser.
+      </p>
+      {scene.overlaps > 0 && (
+        <p className="tactile__warning">
+          {scene.overlaps === 1 ? "Two shapes are" : `${scene.overlaps} pairs of shapes are`} too close
+          together to tell apart by touch at this size. Move them apart in the editor before printing.
+        </p>
+      )}
+
+      <div className="tactile__page">
+        <svg
+          ref={svgRef}
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox={`0 0 ${scene.width} ${scene.height}`}
+          width={`${scene.width}mm`}
+          height={`${scene.height}mm`}
+          role="img"
+          aria-label={`Tactile graphic with ${scene.shapes.length} numbered shapes and ${scene.lines.length} lines, for ${orientation} letter paper. The key follows.`}
+          style={{ width: "100%", height: "auto" }}
+        >
+          <defs>
+            <marker
+              id={markerId}
+              viewBox="0 0 10 10"
+              refX="10"
+              refY="5"
+              markerWidth="5"
+              markerHeight="5"
+              markerUnits="userSpaceOnUse"
+              orient="auto-start-reverse"
+            >
+              <path d="M0,0 L10,5 L0,10 z" fill="#000" />
+            </marker>
+          </defs>
+          <rect x={0} y={0} width={scene.width} height={scene.height} fill="#fff" />
+          {scene.title && <Dots dots={brailleDots(scene.title, TACTILE_MARGIN, TACTILE_MARGIN)} />}
+
+          {scene.lines.map((l, i) => (
+            <g key={i}>
+              <line
+                x1={l.x1}
+                y1={l.y1}
+                x2={l.x2}
+                y2={l.y2}
+                stroke="#000"
+                strokeWidth={STROKE}
+                strokeDasharray={l.dashed ? "3 2" : undefined}
+                markerEnd={l.arrowEnd ? `url(#${markerId})` : undefined}
+                markerStart={l.arrowStart ? `url(#${markerId})` : undefined}
+              />
+              {l.label && <Dots dots={centredBrailleDots(l.label.braille, l.label.cx, l.label.cy)} />}
+            </g>
+          ))}
+
+          {scene.shapes.map((s) => (
+            <g key={s.id}>
+              <Outline s={s} />
+              <Dots dots={centredBrailleDots(s.braille, s.cx, s.cy)} />
+            </g>
+          ))}
+        </svg>
       </div>
-      <DownloadButton targetRef={flowchartRef} />
+
+      <div className="tactile__actions">
+        <button type="button" className="btn" onClick={downloadSvg}>
+          Download tactile graphic (SVG)
+        </button>
+        <button type="button" className="btn btn--outline" onClick={downloadKey}>
+          Download braille key (.brf)
+        </button>
+      </div>
+
+      <table className="tactile__key">
+        <caption>Key to the tactile graphic</caption>
+        <thead>
+          <tr>
+            <th scope="col">Symbol</th>
+            <th scope="col">Stands for</th>
+          </tr>
+        </thead>
+        <tbody>
+          {key.entries.map((e) => (
+            <tr key={`${e.kind}-${e.print}`}>
+              <th scope="row">{e.kind === "node" ? `Shape ${e.print}` : `Line label ${e.print}`}</th>
+              <td>{e.label}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {direct.length > 0 && (
+        <p className="tactile__hint">Written on the lines in braille: {direct.join(", ")}.</p>
+      )}
     </div>
   );
 };

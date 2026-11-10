@@ -1,0 +1,50 @@
+.tactile {
+  display: grid;
+  gap: var(--s-4, 16px);
+  max-width: 900px;
+}
+
+.tactile__hint {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.tactile__warning {
+  margin: 0;
+  padding: var(--s-3, 12px);
+  border: 2px solid currentColor;
+  border-left-width: 6px;
+  border-radius: var(--r-sm, 6px);
+  font-weight: 600;
+}
+
+.tactile__page {
+  border: 1px solid #000;
+  background: #fff;
+  overflow: auto;
+}
+
+.tactile__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2, 8px);
+}
+
+.tactile__key {
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.tactile__key caption {
+  text-align: left;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding-bottom: var(--s-2, 8px);
+}
+
+.tactile__key th,
+.tactile__key td {
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.12));
+  padding: var(--s-2, 8px) var(--s-3, 12px);
+  vertical-align: top;
+}
