@@ -1,0 +1,55 @@
+.braille-view {
+  display: grid;
+  gap: var(--s-3, 12px);
+  max-width: 900px;
+  min-width: 0;
+}
+
+/* Let the 40-cell preview scroll inside its box instead of widening the page on phones. */
+.braille-view > *,
+.braille-view__page {
+  min-width: 0;
+}
+
+.braille-view p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.braille-view__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3, 12px);
+}
+
+.braille-view__note {
+  font-size: 0.95rem;
+}
+
+.braille-view__preview summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.braille-view__page {
+  margin: var(--s-3, 12px) 0 0;
+}
+
+.braille-view__page figcaption {
+  font-weight: 600;
+  margin-bottom: var(--s-1, 4px);
+}
+
+.braille-view__page pre {
+  margin: 0;
+  padding: var(--s-3, 12px);
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.12));
+  background: var(--surface, #fff);
+  /* 40 cells per line; braille glyphs are roughly square in most fonts. */
+  font-size: 1.25rem;
+  line-height: 1.4;
+  white-space: pre;
+  overflow-x: auto;
+  max-width: 100%;
+}

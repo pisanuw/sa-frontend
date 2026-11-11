@@ -115,6 +115,7 @@ const publishedLabel = formatDateTime(data.published_at);
         shortAlt={data.short_alt}
         title={data.title}
         imageDataUrl={imageDataUrl}
+        shareUrl={`${window.location.origin}${window.location.pathname}`}
         initialView={new URLSearchParams(window.location.search).get("view")}
         onViewChange={(next) => {
           const url = new URL(window.location.href);
@@ -132,7 +133,7 @@ const publishedLabel = formatDateTime(data.published_at);
         opacity: 0.75,
       }}
     >
-      Published via STEM-Accessibility. This page is a public rendering of a shared flowchart.
+      Published via STEM-Accessibility. This page is a public rendering of a shared STEM image.
     </div>
     </div>
   );

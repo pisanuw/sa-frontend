@@ -3,6 +3,11 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { QRCodeSVG } from "qrcode.react";
 import QRCodeGenerator from "./QRCode";
 import type { FlowchartData } from "../../types/types";
+import type { DiagramType } from "../../arboretum/diagramTypes";
+import { isDataStructure } from "../../arboretum/diagramTypes";
+import { canRenderBrailleLabels } from "./typed/TypedViews";
+import { brfFileName, downloadBrf, stemImageBraille } from "../../braille/stemImage";
+import { toUeb } from "../../braille/ueb";
 import { jsonToMermaid } from "../../services/utils";
 import {
   buildDiagramVisualForExport,
@@ -16,7 +21,7 @@ import {
 } from "../exports/export-utils";
 import "./styles/ShareToolbar.css";
 
-type Format = "html" | "markdown" | "text";
+type Format = "html" | "markdown" | "text" | "braille";
 
 type Props = {
   title: string;
@@ -24,6 +29,8 @@ type Props = {
   /** Long description as Markdown. */
   summary: string;
   json: FlowchartData;
+  /** Image type; decides whether the braille file includes the tactile graphic's key. */
+  diagramType?: DiagramType;
   /** Absolute address of the shared page; enables the embed code and QR code. */
   publicUrl?: string | null;
 };
@@ -32,6 +39,11 @@ const FORMATS: { value: Format; label: string; hint: string }[] = [
   { value: "html", label: "HTML", hint: "Alt text and long description as HTML paragraphs and headings." },
   { value: "markdown", label: "Markdown", hint: "Plain alt text; long description with headings." },
   { value: "text", label: "Text", hint: "Plain text, no markup." },
+  {
+    value: "braille",
+    label: "Braille (.brf)",
+    hint: "Uncontracted Unified English Braille for braille displays, notetakers and embossers. Copy gives Unicode braille; Download gives a .brf file with the title, alt text, long description and tactile key.",
+  },
 ];
 
 const escapeHtmlText = (s: string) =>
@@ -45,7 +57,7 @@ const fileBase = (title: string) =>
  * Export: copy and download the accessible text of a STEM image in HTML, Markdown, or text, plus
  * embed code and a QR code for the shared page. Lives in the editor, under Accessibility.
  */
-export default function ShareToolbar({ title, shortAlt, summary, json, publicUrl }: Props) {
+export default function ShareToolbar({ title, shortAlt, summary, json, diagramType, publicUrl }: Props) {
   const id = useId();
   const [format, setFormat] = useState<Format>("text");
   const [status, setStatus] = useState("");
@@ -54,13 +66,16 @@ export default function ShareToolbar({ title, shortAlt, summary, json, publicUrl
 
   const say = (msg: string) => setStatus(msg);
 
-  const altFor = (f: Format) => (f === "html" ? `<p>${escapeHtmlText(shortAlt)}</p>` : shortAlt);
+  const altFor = (f: Format) =>
+    f === "html" ? `<p>${escapeHtmlText(shortAlt)}</p>` : f === "braille" ? toUeb(shortAlt) : shortAlt;
   const descriptionFor = (f: Format) =>
     f === "html"
       ? markdownToBasicHtml(summary)
       : f === "markdown"
         ? summary
-        : buildPlainTextFromMarkdown(summary);
+        : f === "braille"
+          ? toUeb(buildPlainTextFromMarkdown(summary))
+          : buildPlainTextFromMarkdown(summary);
 
   async function copy(text: string, what: string) {
     try {
@@ -108,7 +123,20 @@ export default function ShareToolbar({ title, shortAlt, summary, json, publicUrl
 
   async function download() {
     const base = fileBase(title);
-    if (format === "text") {
+    if (format === "braille") {
+      // The numbered tactile graphic has a key; data structures with short labels print the
+      // values themselves and have none.
+      const type = diagramType ?? "flowchart";
+      const doc = stemImageBraille({
+        title,
+        shortAlt,
+        summary,
+        data: json,
+        includeKey: !(isDataStructure(type) && canRenderBrailleLabels(type, json)),
+        source: publicUrl,
+      });
+      downloadBrf(brfFileName(title), doc.brf);
+    } else if (format === "text") {
       downloadTextFile(`${base}-long-description.txt`, descriptionFor("text"));
     } else if (format === "markdown") {
       downloadTextFile(`${base}-long-description.md`, summary, "text/markdown;charset=utf-8");

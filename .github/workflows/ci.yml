@@ -18,6 +18,10 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      # liblouis lets the braille tests compare against the reference translator live,
+      # not only against the stored fixtures.
+      - name: Install liblouis
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends liblouis-bin
       - run: npm ci
       - run: npm run lint
       - run: npm test
