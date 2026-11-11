@@ -208,6 +208,11 @@ export default function AccessibilityEditorModal({
                       : "Generated. Updates whenever you change the diagram."}
                   </p>
                 )}
+                <p className="accessibility-modal-help">
+                  Write math in LaTeX between dollar signs, for example{" "}
+                  <code>$a^2 + b^2 = c^2$</code>. The shared page reads it aloud, lets people
+                  explore it by keyboard, and puts it in Nemeth braille.
+                </p>
                 <LongDescriptionPanel
                   sections={longDescriptionSections}
                   onSectionChange={onLongDescriptionSectionChange}

@@ -1,0 +1,11 @@
+/* Displayed math sits on its own line; wide formulas scroll rather than widen the page. */
+.math--display {
+  display: block;
+  margin: var(--s-3, 12px) 0;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+code.math {
+  white-space: pre-wrap;
+}
