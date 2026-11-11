@@ -126,6 +126,19 @@ compares against it live.
 
 The output has not yet been reviewed by a certified braille transcriber.
 
+## Math
+
+Long descriptions can contain math in LaTeX between dollar signs: `$x^2$` inline, `$$…$$` on its
+own line (Pandoc's rules, so "$5 and $10" is not math). On the Summary view,
+[MathJax](https://www.mathjax.org/) 4 draws each formula with spoken text, keyboard exploration and
+Nemeth braille for braille displays. In the braille file, `src/math/engine.ts` writes math in
+Nemeth Code using the [Speech Rule Engine](https://github.com/Speech-Rule-Engine/speech-rule-engine)
+that MathJax itself uses.
+
+MathJax is served by the site itself: in development the `mathjaxAssets` plugin in
+`vite.config.ts` serves it from `node_modules`, and `npm run build` copies it to `dist/mathjax/`.
+The speech engine version is pinned to the one MathJax depends on.
+
 ## Accessibility
 
 We aim for WCAG 2.2 AA and treat accessibility reports as expertise. See

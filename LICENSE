@@ -83,3 +83,22 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+--------------------------------------------------------------------------------
+Third-party notice: MathJax, its New Computer Modern font, and the Speech Rule Engine
+
+MathJax draws math on shared pages and gives it spoken text, Nemeth braille labels and
+keyboard exploration. Its files are copied from npm (@mathjax/src and
+@mathjax/mathjax-newcm-font) into the built site under /mathjax/, with a copy of the license
+at /mathjax/LICENSE. Source: https://github.com/mathjax/MathJax-src
+Copyright (c) 2017-2026 The MathJax Consortium.
+
+The Speech Rule Engine (npm: speech-rule-engine) turns math into Nemeth braille for the
+braille file and powers MathJax's speech. Source:
+https://github.com/Speech-Rule-Engine/speech-rule-engine
+
+Both are licensed under the Apache License, Version 2.0. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or
+agreed to in writing, software distributed under the License is distributed on an "AS IS"
+BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under the License.
