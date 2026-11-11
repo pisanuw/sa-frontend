@@ -1,0 +1,334 @@
+{
+  "generator": "lou_translate (Liblouis) 3.29.0",
+  "table": "en-ueb-g1.ctb",
+  "cases": [
+    {
+      "input": "Hello, World 123 3d (x+y)=z",
+      "liblouis": ",hello1 ,world #abc #c;d \"<x\"6y\">\"7z"
+    },
+    {
+      "input": "a b c",
+      "liblouis": "a b c"
+    },
+    {
+      "input": "THIS IS LOUD",
+      "liblouis": ",,,this is loud,'"
+    },
+    {
+      "input": "NASA",
+      "liblouis": ",,nasa"
+    },
+    {
+      "input": "NASAs",
+      "liblouis": ",,nasa,'s"
+    },
+    {
+      "input": "NASA's rocket",
+      "liblouis": ",,nasa's rocket"
+    },
+    {
+      "input": "USA, UK and EU.",
+      "liblouis": ",,usa1 ,,uk and ,,eu4"
+    },
+    {
+      "input": "iPhone McDonald",
+      "liblouis": "i,phone ,mc,donald"
+    },
+    {
+      "input": "The END is near.",
+      "liblouis": ",the ,,end is near4"
+    },
+    {
+      "input": "1,234.5",
+      "liblouis": "#a1bcd4e"
+    },
+    {
+      "input": "555-1234",
+      "liblouis": "#eee-#abcd"
+    },
+    {
+      "input": "1/2 and 3/4",
+      "liblouis": "#a_/#b and #c_/#d"
+    },
+    {
+      "input": "3D 3rd 2nd 4th 10am",
+      "liblouis": "#c,d #crd #bnd #dth #aj;am"
+    },
+    {
+      "input": "x = 5",
+      "liblouis": "x \"7 #e"
+    },
+    {
+      "input": "If x > 3 then y < 2.",
+      "liblouis": ",if x `> #c then y `< #b4"
+    },
+    {
+      "input": "Is it true? Yes! No; maybe: ok.",
+      "liblouis": ",is it true8 ,yes6 ,no2 maybe3 ok4"
+    },
+    {
+      "input": "\"quoted text\" and 'single'",
+      "liblouis": "8quoted text0 and 'single'"
+    },
+    {
+      "input": "it's don't",
+      "liblouis": "it's don't"
+    },
+    {
+      "input": "Start → Process → End",
+      "liblouis": ",start ;|o ,process ;|o ,end"
+    },
+    {
+      "input": "Step 1: Read input.",
+      "liblouis": ",step #a3 ,read input4"
+    },
+    {
+      "input": "Node 10 links to node 11.",
+      "liblouis": ",node #aj links to node #aa4"
+    },
+    {
+      "input": "50% off & free @ home #1 $5",
+      "liblouis": "#ej.0 off `& free `a home _?#a `s#e"
+    },
+    {
+      "input": "a/b e*f g_h ~ ^ |",
+      "liblouis": "a_/b e\"9f g.-h `9 `5 _|"
+    },
+    {
+      "input": "[bracket] {brace}",
+      "liblouis": ".<bracket.> _<brace_>"
+    },
+    {
+      "input": "2 × 3 ÷ 4 − 1",
+      "liblouis": "#b \"8 #c \"/ #d \"- #a"
+    },
+    {
+      "input": "Temperature 30°",
+      "liblouis": ",temperature #cj~j"
+    },
+    {
+      "input": "Wait…",
+      "liblouis": ",wait444"
+    },
+    {
+      "input": "e-mail co-op",
+      "liblouis": "e-mail co-op"
+    },
+    {
+      "input": "x2 A1 B12",
+      "liblouis": "x#b ,a#a ,b#ab"
+    },
+    {
+      "input": "3.14 0.5 .5",
+      "liblouis": "#c4ad #j4e #4e"
+    },
+    {
+      "input": "yes/no",
+      "liblouis": "yes_/no"
+    },
+    {
+      "input": "THIS IS LOUD. And quiet",
+      "liblouis": ",,,this is loud4,' ,and quiet"
+    },
+    {
+      "input": "ABC DEF ghi",
+      "liblouis": ",,abc ,,def ghi"
+    },
+    {
+      "input": "AB CD EF gh",
+      "liblouis": ",,,ab cd ef,' gh"
+    },
+    {
+      "input": "A B C d",
+      "liblouis": ",,,a b c,' d"
+    },
+    {
+      "input": "A",
+      "liblouis": ",a"
+    },
+    {
+      "input": "I am OK?",
+      "liblouis": ",i am ,,ok8"
+    },
+    {
+      "input": "A-1 (1) 1. -5 +5 1st",
+      "liblouis": ",a-#a \"<#a\"> #a4 -#e \"6#e #ast"
+    },
+    {
+      "input": "x^2 f(x) 2+2=4",
+      "liblouis": "x`5#b f\"<x\"> #b\"6#b\"7#d"
+    },
+    {
+      "input": "ABCdef",
+      "liblouis": ",,abc,'def"
+    },
+    {
+      "input": "Yes/No",
+      "liblouis": ",yes_/,no"
+    },
+    {
+      "input": "x≤y a≥b a≠b ≈ ±",
+      "liblouis": "x_`<y a_`>b a\"7`:b ~9 _6"
+    },
+    {
+      "input": "“curly” ‘single’ it’s",
+      "liblouis": "8curly0 ,8single,0 it's"
+    },
+    {
+      "input": "en–dash em—dash",
+      "liblouis": "en,-dash em,-dash"
+    },
+    {
+      "input": "• bullet",
+      "liblouis": "_4 bullet"
+    },
+    {
+      "input": "· middle",
+      "liblouis": "`* middle"
+    },
+    {
+      "input": "Ω π α β",
+      "liblouis": ",.w .p .a .b"
+    },
+    {
+      "input": "é ñ ü",
+      "liblouis": "~/e ~}n ~3u"
+    },
+    {
+      "input": "→ ← ↑ ↓ ⇒",
+      "liblouis": ";|o ;|{ ;|+ ;|% ;|7o"
+    },
+    {
+      "input": "3 → 4",
+      "liblouis": "#c ;|o #d"
+    },
+    {
+      "input": "100%",
+      "liblouis": "#ajj.0"
+    },
+    {
+      "input": "#5",
+      "liblouis": "_?#e"
+    },
+    {
+      "input": "2^n",
+      "liblouis": "#b`5n"
+    },
+    {
+      "input": "1-2",
+      "liblouis": "#a-#b"
+    },
+    {
+      "input": "è ê ç å č ā É Ñ",
+      "liblouis": "~*e ~%e ~&c ~$a ~+c `-a ,~/e ,~}n"
+    },
+    {
+      "input": "α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω",
+      "liblouis": ".a .b .g .d .e .z .: .? .i .k .l .m .n .x .o .p .r .s .t .u .f .& .y .w"
+    },
+    {
+      "input": "Δ Σ Π Λ Ω",
+      "liblouis": ",,,.d .s .p .l .w,'"
+    },
+    {
+      "input": "ABC123 CO-OP THE END",
+      "liblouis": ",,,abc#abc co-op the end,'"
+    },
+    {
+      "input": "ABC 123 DEF GHI",
+      "liblouis": ",,,abc #abc def ghi,'"
+    },
+    {
+      "input": "THIS, IS LOUD",
+      "liblouis": ",,,this1 is loud,'"
+    },
+    {
+      "input": "Plan A or B",
+      "liblouis": ",plan ,a or ,b"
+    },
+    {
+      "input": "A AND B AND C",
+      "liblouis": ",,,a and b and c,'"
+    },
+    {
+      "input": "x² x³ ½",
+      "liblouis": "x;9#b x;9#c #a/b"
+    },
+    {
+      "input": "CO-OP x",
+      "liblouis": ",,co-,,op x"
+    },
+    {
+      "input": "ABC123 x",
+      "liblouis": ",,abc#abc x"
+    },
+    {
+      "input": "\"THIS IS LOUD\"",
+      "liblouis": "8,,,this is loud0,'"
+    },
+    {
+      "input": "ABC 123 DEF",
+      "liblouis": ",,abc #abc ,,def"
+    },
+    {
+      "input": "ABC DEF 1",
+      "liblouis": ",,abc ,,def #a"
+    },
+    {
+      "input": "(ABC DEF GHI)",
+      "liblouis": "\"<,,,abc def ghi\">,'"
+    },
+    {
+      "input": "x THE CAT SAT. y",
+      "liblouis": "x ,,,the cat sat4,' y"
+    },
+    {
+      "input": "a.b",
+      "liblouis": "a4b"
+    },
+    {
+      "input": "e.g.",
+      "liblouis": "e4g4"
+    },
+    {
+      "input": "www.uw.edu",
+      "liblouis": "www4uw4edu"
+    },
+    {
+      "input": "Is 3 > 2?",
+      "liblouis": ",is #c `> #b8"
+    },
+    {
+      "input": "3a 3k 3A",
+      "liblouis": "#c;a #ck #c,a"
+    },
+    {
+      "input": "2023-11-10",
+      "liblouis": "#bjbc-#aa-#aj"
+    },
+    {
+      "input": "node_1",
+      "liblouis": "node.-#a"
+    },
+    {
+      "input": "“Start”",
+      "liblouis": "8,start0"
+    },
+    {
+      "input": "a-b",
+      "liblouis": "a-b"
+    },
+    {
+      "input": "1st-2nd",
+      "liblouis": "#ast-#bnd"
+    },
+    {
+      "input": "A flowchart with 4 steps running top to bottom. It begins at “Start” and ends at “Go” and “Wait”.",
+      "liblouis": ",a flowchart with #d steps running top to bottom4 ,it begins at 8,start0 and ends at 8,go0 and 8,wait04"
+    },
+    {
+      "input": "Decision “Ready?”: “Yes” leads to “Go”; “No” leads to “Wait”",
+      "liblouis": ",decision 8,ready803 8,yes0 leads to 8,go02 8,no0 leads to 8,wait0"
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+Hello, World 123 3d (x+y)=z
+a b c
+THIS IS LOUD
+NASA
+NASAs
+NASA's rocket
+USA, UK and EU.
+iPhone McDonald
+The END is near.
+1,234.5
+555-1234
+1/2 and 3/4
+3D 3rd 2nd 4th 10am
+x = 5
+If x > 3 then y < 2.
+Is it true? Yes! No; maybe: ok.
+"quoted text" and 'single'
+it's don't
+Start → Process → End
+Step 1: Read input.
+Node 10 links to node 11.
+50% off & free @ home #1 $5
+a/b e*f g_h ~ ^ |
+[bracket] {brace}
+2 × 3 ÷ 4 − 1
+Temperature 30°
+Wait…
+e-mail co-op
+x2 A1 B12
+3.14 0.5 .5
+yes/no
+THIS IS LOUD. And quiet
+ABC DEF ghi
+AB CD EF gh
+A B C d
+A
+I am OK?
+A-1 (1) 1. -5 +5 1st
+x^2 f(x) 2+2=4
+ABCdef
+Yes/No
+x≤y a≥b a≠b ≈ ±
+“curly” ‘single’ it’s
+en–dash em—dash
+• bullet
+· middle
+Ω π α β
+é ñ ü
+→ ← ↑ ↓ ⇒
+3 → 4
+100%
+#5
+2^n
+1-2
+è ê ç å č ā É Ñ
+α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω
+Δ Σ Π Λ Ω
+ABC123 CO-OP THE END
+ABC 123 DEF GHI
+THIS, IS LOUD
+Plan A or B
+A AND B AND C
+x² x³ ½
+CO-OP x
+ABC123 x
+"THIS IS LOUD"
+ABC 123 DEF
+ABC DEF 1
+(ABC DEF GHI)
+x THE CAT SAT. y
+a.b
+e.g.
+www.uw.edu
+Is 3 > 2?
+3a 3k 3A
+2023-11-10
+node_1
+“Start”
+a-b
+1st-2nd
+A flowchart with 4 steps running top to bottom. It begins at “Start” and ends at “Go” and “Wait”.
+Decision “Ready?”: “Yes” leads to “Go”; “No” leads to “Wait”
