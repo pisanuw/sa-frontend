@@ -23,6 +23,12 @@ API contract name the matching backend release.
 - Long description builder (`/ld`): saving a link with an image now needs an account (text-only saves do
   not). The page says so before you finish, with a sign-in link that opens in a new tab so your text is not
   lost, and sends your session token so the image is saved under your account.
+- Charts: **What you will hear**, a written description of the sonification beside the play button (how
+  many notes, what pitch stands for, highest and lowest, start and end, rising or falling), for readers
+  who cannot hear it. Built from the same spec the player uses (`src/sonification/describe.ts`). The
+  player's messages ("Upload a CSV and choose a value column first", playback errors) were never shown;
+  they now appear in a status line that screen readers announce, and the player no longer logs on every
+  render.
 
 ### Changed
 - CSV upload reads ordinary CSV files: a header row, any column names, blank cells, quoted commas, and
