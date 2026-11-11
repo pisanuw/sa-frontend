@@ -90,8 +90,9 @@ alt text, the long description and, for flowcharts, the tactile graphic's key.
   - Numbers were printed without the braille number sign, so node 1 read as the letter *a* and
     node 10 as *aj*.
   - Edge labels were numbered from 1 again on the graphic but continued after the nodes in the
-    key, so "Yes" was 1 on the paper and 6 in the key, and collided with node 1. Edge labels now
-    use letters (A, B, …) and nodes use numbers, the same on the graphic and in the key.
+    key, so "Yes" was 1 on the paper and 6 in the key, and collided with node 1. Nodes now use
+    numbers with the number sign; short edge labels such as "Yes" are written on the line in
+    braille, and longer ones get a lowercase letter (a, b, …), the same on the graphic and in the key.
   - Braille was drawn with a font, so dot size and spacing depended on whichever font the browser
     picked. It is now drawn as dots at standard braille dimensions (2.5 mm dot spacing,
     6.2 mm cell spacing).
