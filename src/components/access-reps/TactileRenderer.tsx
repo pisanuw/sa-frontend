@@ -141,7 +141,7 @@ const TactileFlowchart: React.FC<TactileFlowchartProps> = ({ nodes, edges }) => 
             </text>
           </g>
         );
-      case 'parallelogram':
+      case 'parallelogram': {
         const skew = 20;
         return (
           <g>
@@ -161,6 +161,7 @@ const TactileFlowchart: React.FC<TactileFlowchartProps> = ({ nodes, edges }) => 
             </text>
           </g>
         );
+      }
       default:
         return (
           <g>

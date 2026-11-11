@@ -7,6 +7,7 @@ API contract name the matching backend release.
 ## [Unreleased]
 
 ### Added
+- CI (GitHub Actions): lint, unit tests, type check and build on every push and pull request.
 - Charts: a **Navigable chart** view built with [Olli](https://github.com/umwelt-data/olli) (BSD 3-Clause)
   that lets screen reader users explore a chart as an outline and open its data as a table. Loaded on demand.
 - Charts: a **Data table** with the uploaded values as a real HTML table.
@@ -25,11 +26,17 @@ API contract name the matching backend release.
   lost, and sends your session token so the image is saved under your account.
 
 ### Changed
+- Lint: `vendor/` (the Arboretum submodule) is no longer linted; `any` is a warning rather than an
+  error; unused values named `_…` and props dropped with `{ a, ...rest }` are allowed. `npm run lint` now
+  passes (warnings remain).
 - CSV upload reads ordinary CSV files: a header row, any column names, blank cells, quoted commas, and
   title lines above the table. It reports how many rows and columns it loaded, or why it found none.
   Previously only one fixed layout worked and everything else produced an empty dataset.
 
 ### Fixed
+- `package-lock.json` was out of sync with `package.json`, so `npm ci` failed.
+- The navigable list (`NavigableList`) and the Grafari results page called React hooks after an early
+  return; they would crash if their data arrived after the first render.
 - Column auto-mapping: the line preset no longer takes the time column as the value (which also drove the
   sonification's pitch), category presets no longer keep a stale time column, and columns chosen for an
   earlier file or preset are cleared. Sonification with no time column now uses row order.

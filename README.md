@@ -124,6 +124,7 @@ See [LICENSE](LICENSE). Copyright (c) 2025 University of Washington.
 ## Tests
 
 ```bash
+npm run lint        # eslint (CI runs this, the unit tests and the build on every push)
 npm test            # unit tests (vitest): Mermaid reader, change detection, types, descriptions
 npm run test:e2e:try # Try-it (guest) test; the frontend must run without dev auth (see e2e/try.mjs)
 npm run test:e2e    # browser smoke test of the main flows; needs the local dev stack (see e2e/smoke.mjs)

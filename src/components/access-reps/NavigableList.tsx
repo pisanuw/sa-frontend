@@ -128,11 +128,9 @@ const NavigableList: React.FC<Props> = ({ jsonData }) => {
   const [layoutPos, setLayoutPos] = useState<Record<string, { x: number; y: number }>>({});
   const [canvasSize, setCanvasSize] = useState<{ w: number; h: number }>({ w: 0, h: 0 });
  
-  if (!jsonData) {
-    return <div>Loading STEM image...</div>;
-  }
-
-  const { nodes, edges } = jsonData;
+  // Hooks below must run on every render, so read the data without returning early.
+  const nodes = jsonData?.nodes ?? [];
+  const edges = jsonData?.edges ?? [];
 
   useLayoutEffect(() => {
   setLayoutLocked(false);
@@ -259,6 +257,10 @@ useLayoutEffect(() => {
 
  setLayoutLocked(true);
 }, [nodes.length, nodeRects, layoutLocked]); 
+
+  if (!jsonData) {
+    return <div>Loading STEM image...</div>;
+  }
 
 
 const renderEdges = () => {
