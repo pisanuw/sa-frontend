@@ -1,9 +1,9 @@
 import { useEffect, useId, useState } from "react";
-import { IMAGE_FORMAT_NAMES, IMAGE_UPLOAD_ACCEPT, MAX_IMAGE_BYTES, imageFileProblem, uploadRefusalMessage } from "../lib/imageUpload";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
 import { apiFetch, apiUpload, publicFetch } from "../lib/api";
 import type { FlowchartData } from "../types/types";
+import { IMAGE_FORMAT_NAMES, IMAGE_UPLOAD_ACCEPT, MAX_IMAGE_BYTES, imageFileProblem, uploadRefusalMessage } from "../lib/imageUpload";
 import UploadJobStatus from "../components/upload/UploadJobStatus";
 import { logResearchEvent } from "../lib/logResearchEvent";
 import {
