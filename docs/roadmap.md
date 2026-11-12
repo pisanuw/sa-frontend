@@ -3,7 +3,8 @@
 Draft of 2026-11-10. Covers both repositories (this frontend and the backend). Edit freely.
 Each phase ends in something a student can use, so the order can change without leaving
 half-built layers behind. Items checked off below are in pull requests opened alongside this one
-(foundations, contrast, braille, sonification description, math; backend worker and CI).
+(foundations, braille, sonification description, math; backend worker and CI). Button contrast is
+fixed separately in #6.
 
 ## The goal
 
