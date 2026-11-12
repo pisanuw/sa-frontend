@@ -28,6 +28,11 @@ API contract name the matching backend release.
 - CSV upload reads ordinary CSV files: a header row, any column names, blank cells, quoted commas, and
   title lines above the table. It reports how many rows and columns it loaded, or why it found none.
   Previously only one fixed layout worked and everything else produced an empty dataset.
+- Create, Upload image: the file chooser offers PNG, JPEG, WebP, GIF, BMP and TIFF, and says so with the
+  8 MB limit. An SVG, a HEIC photo, an empty or oversized file, or another kind of file is refused with
+  what to do instead, before anything is sent. When the server refuses an upload, its reason is shown
+  instead of "We couldn't process that STEM image". Needs the backend change that reads transparent
+  PNGs and these formats (stem-accessibility/frontend#4).
 
 ### Fixed
 - Column auto-mapping: the line preset no longer takes the time column as the value (which also drove the

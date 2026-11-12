@@ -1,4 +1,5 @@
 import { useEffect, useId, useState } from "react";
+import { IMAGE_FORMAT_NAMES, IMAGE_UPLOAD_ACCEPT, MAX_IMAGE_BYTES, imageFileProblem, uploadRefusalMessage } from "../lib/imageUpload";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
 import { apiFetch, apiUpload, publicFetch } from "../lib/api";
@@ -84,6 +85,7 @@ export default function CreatePage() {
 
   const [showUpload, setShowUpload] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [fileError, setFileError] = useState("");
   const [imagePublic, setImagePublic] = useState(false);
   // Keep the original next to the STEM image so it can be compared while editing. On by default
   // for the person's own work; unchecking it means the image is not stored at all.
@@ -247,7 +249,9 @@ export default function CreatePage() {
           error_message: e instanceof Error ? e.message : String(e),
         },
       });
-      setStatus("We couldn’t process that STEM image. Please try again.");
+      // The server's reason when it refused the file (wrong kind, too large); otherwise the
+      // general message, since other failures carry technical detail.
+      setStatus(uploadRefusalMessage(e) ?? "We couldn’t process that STEM image. Please try again.");
       setStatusIsError(true);
     } finally {
       setBusy(false);
@@ -535,10 +539,25 @@ export default function CreatePage() {
                 <input
                   id={`${id}-file`}
                   type="file"
-                  accept="image/*"
+                  accept={IMAGE_UPLOAD_ACCEPT}
                   disabled={busy}
-                  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                  aria-describedby={`${id}-file-help`}
+                  onChange={(e) => {
+                    const chosen = e.target.files?.[0] ?? null;
+                    const problem = chosen ? imageFileProblem(chosen) : null;
+                    setFileError(problem ?? "");
+                    setFile(problem ? null : chosen);
+                  }}
                 />
+                <p id={`${id}-file-help`} className="create-hint">
+                  {IMAGE_FORMAT_NAMES}, up to {MAX_IMAGE_BYTES / (1024 * 1024)} MB. Transparent
+                  backgrounds and phone photos are fine.
+                </p>
+                {fileError && (
+                  <p role="alert" className="create-why create-error">
+                    {fileError}
+                  </p>
+                )}
                 {file && (
                   <p className="create-hint" aria-live="polite">
                     Selected: <strong>{file.name}</strong>
@@ -599,7 +618,9 @@ export default function CreatePage() {
                   {busy ? "Processing…" : "Create from image"}
                 </button>
               </div>
-              {!file && !busy && <p className="create-why">Choose an image file to continue.</p>}
+              {!file && !busy && !fileError && (
+                <p className="create-why">Choose an image file to continue.</p>
+              )}
 
               <UploadJobStatus busy={busy} status={status} jobId={jobId} error={statusIsError} />
             </section>
