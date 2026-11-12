@@ -1,0 +1,21 @@
+{
+  "ignores": [
+    "@mathjax/mathjax-newcm-font",
+    "vega",
+    "vega-lite",
+    "d3-hierarchy",
+    "hast",
+    "@types/*",
+    "@eslint/js",
+    "eslint-plugin-*",
+    "typescript-eslint",
+    "globals",
+    "jsdom",
+    "@testing-library/*",
+    "puppeteer-core",
+    "@axe-core/puppeteer",
+    "depcheck",
+    "ts-prune",
+    "unimported"
+  ]
+}

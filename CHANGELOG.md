@@ -58,6 +58,14 @@ API contract name the matching backend release.
   title lines above the table. It reports how many rows and columns it loaded, or why it found none.
   Previously only one fixed layout worked and everything else produced an empty dataset.
 
+### Removed
+- Dependencies nothing imports: `@clerk/clerk-react`, `arquero`, `d3`, `moment`, `react-icons` and
+  `reactflow` (the app uses `@xyflow/react`). Erie and Mermaid still install `d3` and `moment` for
+  themselves. `d3-hierarchy`, which the vendored Arboretum tree code imports and which only `d3` was
+  installing, is now declared directly (pinned to 3.1.2, the version already in use). `vega` and
+  `vega-lite` stay: Olli needs `vega-lite` as a peer, and it needs `vega`. `.depcheckrc.json` records
+  these exceptions so `npx depcheck` reports only real problems. Part of stem-accessibility/frontend#1.
+
 ### Fixed
 - Tactile (flowcharts): numbers had no braille number sign, so shape 1 read as the letter "a" and shape 10
   as "aj". Line labels were numbered from 1 again on the graphic but after the shapes in the key, so the
