@@ -48,12 +48,14 @@ function mathjaxAssets(): Plugin {
       // Vite also calls this when a dev server or vitest shuts down; copy only for `vite build`.
       if (!isBuild) return
       // Only what the browser loads: the TeX component, its extensions, the accessibility
-      // components and speech worker with its rule files, and the CHTML font.
+      // components and speech worker with its rule files, and the font. The SVG font is
+      // included because MathJax's menu lets readers switch to SVG output; without it
+      // MathJax stalls on every later visit (fetched only by readers who choose SVG).
       const dest = path.join(outDir, 'mathjax')
       for (const entry of ['tex-chtml.js', 'a11y', 'input', 'output', 'ui', 'sre']) {
         cpSync(path.join(MATHJAX_BUNDLE, entry), path.join(dest, entry), { recursive: true })
       }
-      for (const entry of ['chtml', 'chtml.js']) {
+      for (const entry of ['chtml', 'chtml.js', 'svg', 'svg.js']) {
         cpSync(path.join(MATHJAX_FONT, entry), path.join(dest, 'fonts/mathjax-newcm-font', entry), {
           recursive: true,
         })

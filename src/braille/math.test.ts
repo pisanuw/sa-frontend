@@ -11,6 +11,37 @@ describe("math in the braille file", () => {
     expect(markdownLines("- Area: $\\pi r^2$")[0]).toEqual({ kind: "item", level: 1, text: "Area: $\\pi r^2$" });
   });
 
+  it("keeps a $ in code as a dollar sign, not math", () => {
+    expect(stripInlineMarkdown("Run `echo $z$` now")).toBe("Run echo \\$z\\$ now");
+    const doc = buildBrailleDocument({ title: "Shell", longDescription: "Run `echo $z$` now" });
+    const t = text(doc.pages);
+    expect(t).toContain(toUeb("echo $z$"));
+    expect(t).not.toContain(toUeb("LaTeX"));
+  });
+
+  it("removes emphasis and links around math whole", () => {
+    expect(stripInlineMarkdown("**bold $y^2$** and [see $x$](https://example.com)")).toBe(
+      "bold $y^2$ and see $x$"
+    );
+  });
+
+  it("keeps a multi-line displayed formula as one expression that matches its Nemeth", () => {
+    const md = "Before\n\n$$x\n- 1$$\n\nAfter";
+    expect(markdownLines(md)).toEqual([
+      { kind: "paragraph", text: "Before" },
+      { kind: "paragraph", text: "$$x\n- 1$$" },
+      { kind: "paragraph", text: "After" },
+    ]);
+    const doc = buildBrailleDocument({ title: "T", longDescription: md, math: new Map([["x\n- 1", "⠭⠤⠂"]]) });
+    expect(text(doc.pages)).toContain("⠸⠩ ⠭⠤⠂ ⠸⠱");
+  });
+
+  it("writes an escaped dollar as a dollar sign", () => {
+    const doc = buildBrailleDocument({ title: "T", longDescription: "Price \\$5 and more" });
+    expect(text(doc.pages)).toContain(toUeb("$5"));
+    expect(text(doc.pages)).not.toContain(toUeb("\\"));
+  });
+
   it("writes math in Nemeth between the switch indicators and explains them", () => {
     const doc = buildBrailleDocument({
       title: "Circle",

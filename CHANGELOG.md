@@ -22,9 +22,16 @@ API contract name the matching backend release.
 - Math in long descriptions: write LaTeX between dollar signs (`$a^2+b^2=c^2$`, or `$$…$$` on its own
   line). The Summary view draws it with MathJax 4: each formula is read aloud, can be explored by keyboard,
   and gives braille displays its Nemeth braille. The braille file writes math in Nemeth Code between the
-  Nemeth Code indicators. Money such as "$5 and $10" is left alone. MathJax is served from this site
-  (copied into `dist/mathjax/` by the build, about 10 MB, loaded only on pages with math), never from a
-  CDN. TeX that could add links or styles (`\href`, `\style`, `\class` and similar) is shown as source.
+  Nemeth Code indicators. Dollar signs follow Pandoc's rules, so money such as "$5 and $10" is left
+  alone, math never runs across a paragraph, and `\$` is a dollar sign. Math is kept away from Markdown
+  (as placeholder tokens), so emphasis, links and code around it work and a multi-line `$$…$$` stays
+  whole, on the page and in the braille file. MathJax is served from this site (copied into
+  `dist/mathjax/` by the build, about 21 MB including the SVG font for readers who choose SVG output in
+  MathJax's menu; a page fetches only what it uses, and only when it has math), never from a CDN. If
+  MathJax does not start within 20 seconds, formulas are shown as their TeX source. TeX that could add
+  links, styles or oversized boxes (`\href`, `\style`, `\class`, `\bbox` and similar) is shown as source.
+  Not yet handled: a formula longer than a braille line is divided at the end of the line, not at the
+  points Nemeth prefers.
   The editor's long description explains how to write math. Credits for MathJax and the Speech Rule
   Engine (Apache 2.0) in the footer, About page and LICENSE.
 - `react-markdown` is now a declared dependency (it was used but only installed through

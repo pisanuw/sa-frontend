@@ -15,6 +15,8 @@ describe("math engine (MathJax TeX input + Speech Rule Engine)", () => {
     const e = await loadMathEngine();
     expect(e.nemeth("\\frac{1}")).toBeNull();
     expect(e.nemeth("\\notacommand x")).toBeNull();
+    // The engine has no html package, so \\href is unknown to it whatever isSafeTex says;
+    // isSafeTex's own tests cover refusing it before MathJax sees it.
     expect(e.nemeth("\\href{https://example.com}{x}")).toBeNull();
     expect(e.mathml("x")).toContain("<math");
   }, 30000);

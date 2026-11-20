@@ -22,10 +22,26 @@ declare global {
 
 const ROOT = `${import.meta.env.BASE_URL}mathjax`;
 
+/**
+ * How long to wait for MathJax before showing formulas as their TeX source. MathJax can stall
+ * without an error (a file it asks for is missing and the site answers with its index page),
+ * which would otherwise leave every formula undrawn with no fallback.
+ */
+export const MATHJAX_TIMEOUT_MS = 20_000;
+
 let loading: Promise<MathJaxGlobal> | null = null;
 
 export function loadMathJax(): Promise<MathJaxGlobal> {
   loading ??= new Promise<MathJaxGlobal>((resolve, reject) => {
+    const timer = window.setTimeout(() => reject(new Error("MathJax did not start in time")), MATHJAX_TIMEOUT_MS);
+    const done = (mj: MathJaxGlobal) => {
+      window.clearTimeout(timer);
+      resolve(mj);
+    };
+    const fail = (e: unknown) => {
+      window.clearTimeout(timer);
+      reject(e);
+    };
     window.MathJax = {
       loader: {
         paths: { mathjax: ROOT, fonts: `${ROOT}/fonts` },
@@ -39,10 +55,10 @@ export function loadMathJax(): Promise<MathJaxGlobal> {
     const script = document.createElement("script");
     script.src = `${ROOT}/tex-chtml.js`;
     script.async = true;
-    script.onerror = () => reject(new Error("MathJax did not load"));
+    script.onerror = () => fail(new Error("MathJax did not load"));
     script.onload = () => {
       const mj = window.MathJax as MathJaxGlobal;
-      mj.startup.promise.then(() => resolve(mj), reject);
+      mj.startup.promise.then(() => done(mj), fail);
     };
     document.head.appendChild(script);
   }).catch((e) => {

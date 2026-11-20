@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeMath from '../../math/rehypeMath';
-import { protectMathInMarkdown } from '../../math/segments';
+import { maskMath } from '../../math/segments';
 import MathFormula from './MathFormula';
 import { FlowchartViewer } from '../ReactFlowViewer';
 import type { FlowchartData } from '../../types/types';
@@ -20,6 +20,9 @@ const AccessibleMarkdown: React.FC<Props> = ({
   imageAlt,
   flowchartData,
 }) => {
+
+  // Math is swapped for tokens before Markdown runs and drawn by rehypeMath afterwards.
+  const masked = useMemo(() => maskMath(content), [content]);
 
   const figureDescription =
     imageAlt ||
@@ -54,7 +57,7 @@ const AccessibleMarkdown: React.FC<Props> = ({
       ) : null}
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeMath]}
+        rehypePlugins={[[rehypeMath, { math: masked.math }]]}
         components={{
           // Math ($…$, $$…$$) marked by rehypeMath, drawn by MathJax.
           span: ({ node, ...props }) =>
@@ -126,7 +129,7 @@ const AccessibleMarkdown: React.FC<Props> = ({
           ),
         }}
       >
-        {protectMathInMarkdown(content)}
+        {masked.text}
       </ReactMarkdown>
     </div>
   );
