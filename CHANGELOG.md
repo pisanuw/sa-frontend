@@ -7,7 +7,7 @@ API contract name the matching backend release.
 ## [Unreleased]
 
 ### Added
-- CI (GitHub Actions): lint, unit tests, type check and build on every push and pull request.
+- CI (GitHub Actions): lint, unit tests, type check and build on every pull request and every push to `main`.
 - Charts: a **Navigable chart** view built with [Olli](https://github.com/umwelt-data/olli) (BSD 3-Clause)
   that lets screen reader users explore a chart as an outline and open its data as a table. Loaded on demand.
 - Charts: a **Data table** with the uploaded values as a real HTML table.
@@ -34,6 +34,8 @@ API contract name the matching backend release.
   Previously only one fixed layout worked and everything else produced an empty dataset.
 
 ### Fixed
+- Shared STEM image pages: "Loading STEM image…" is announced by screen readers (`role="status"`), and a
+  load error is announced as an alert.
 - `package-lock.json` was out of sync with `package.json`, so `npm ci` failed.
 - The navigable list (`NavigableList`) and the Grafari results page called React hooks after an early
   return; they would crash if their data arrived after the first render.
