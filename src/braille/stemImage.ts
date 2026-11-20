@@ -30,18 +30,8 @@ export function stemImageBraille(input: StemImageBrailleInput): BrailleDocument 
   });
 }
 
-export function brfFileName(title?: string | null): string {
-  const base =
-    (title || "stem-image").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "stem-image";
-  return `${base}.brf`;
-}
-
-/** Save a .brf file. BRF is plain ASCII, so it opens on embossers, notetakers and braille apps. */
-export function downloadBrf(fileName: string, brf: string): void {
-  const url = URL.createObjectURL(new Blob([brf], { type: "text/plain;charset=us-ascii" }));
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = fileName;
-  a.click();
-  URL.revokeObjectURL(url);
-}
+/**
+ * Media type for .brf downloads (pass to `downloadTextFile`). BRF is plain ASCII, so it opens on
+ * embossers, notetakers and braille apps.
+ */
+export const BRF_MIME = "text/plain;charset=us-ascii";

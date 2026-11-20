@@ -1,6 +1,7 @@
 import { useId, useMemo, useState } from "react";
 import type { FlowchartData } from "../../types/types";
-import { stemImageBraille, brfFileName, downloadBrf } from "../../braille/stemImage";
+import { BRF_MIME, stemImageBraille } from "../../braille/stemImage";
+import { downloadTextFile, fileNameBase } from "../exports/export-utils";
 import "./styles/Braille.css";
 
 type Props = {
@@ -24,6 +25,7 @@ export default function BrailleView({ data, title, shortAlt, summary, includeKey
     [data, title, shortAlt, summary, includeKey, shareUrl]
   );
   const [status, setStatus] = useState("");
+  const [error, setError] = useState("");
   const id = useId();
   const pages = doc.pages.length;
 
@@ -44,14 +46,24 @@ export default function BrailleView({ data, title, shortAlt, summary, includeKey
           type="button"
           className="btn"
           onClick={() => {
-            downloadBrf(brfFileName(title), doc.brf);
-            setStatus(`Downloaded ${brfFileName(title)}, ${pages} braille ${pages === 1 ? "page" : "pages"}.`);
+            const fileName = `${fileNameBase(title)}.brf`;
+            try {
+              downloadTextFile(fileName, doc.brf, BRF_MIME);
+              setError("");
+              setStatus(`Downloaded ${fileName}, ${pages} braille ${pages === 1 ? "page" : "pages"}.`);
+            } catch {
+              setStatus("");
+              setError("Could not download the braille file. Reload the page and try again.");
+            }
           }}
         >
           Download braille file (.brf)
         </button>
         <span role="status" aria-live="polite">
           {status}
+        </span>
+        <span className="braille-view__error" role="alert">
+          {error}
         </span>
       </div>
       <p className="braille-view__note">
@@ -70,8 +82,8 @@ export default function BrailleView({ data, title, shortAlt, summary, includeKey
             <figcaption id={`${id}-page-${i}`}>
               Page {i + 1} of {pages}
             </figcaption>
-            {/* Focusable so keyboard users can scroll a page that is wider than the screen. */}
-            <pre tabIndex={0} aria-labelledby={`${id}-page-${i}`}>
+            {/* A named, focusable region so keyboard users can scroll a page wider than the screen. */}
+            <pre role="region" tabIndex={0} aria-labelledby={`${id}-page-${i}`}>
               {lines.join("\n")}
             </pre>
           </figure>

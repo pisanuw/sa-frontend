@@ -16,6 +16,9 @@ API contract name the matching backend release.
   (`en-ueb-g1.ctb`) by 82 stored cases (`src/braille/fixtures/`; regenerate with
   `node scripts/braille-fixtures.mjs`) and, when liblouis is installed, live. CI installs liblouis.
 - Tactile (flowcharts): **Download braille key (.brf)** next to the graphic, and a key table on the page.
+- Tactile and Braille views: the scrollable graphic and braille pages are named regions that keyboard
+  users can reach and scroll, with a solid focus ring (also on the preview's toggle). The overlap warning
+  and any failed download are announced as alerts; successful downloads are announced politely.
 - Charts: a **Navigable chart** view built with [Olli](https://github.com/umwelt-data/olli) (BSD 3-Clause)
   that lets screen reader users explore a chart as an outline and open its data as a table. Loaded on demand.
 - Charts: a **Data table** with the uploaded values as a real HTML table.
@@ -53,6 +56,10 @@ API contract name the matching backend release.
   as "aj". Line labels were numbered from 1 again on the graphic but after the shapes in the key, so the
   label "Yes" could be 1 on paper (the same as shape 1) and 6 in the key. A one-step flowchart produced
   invalid coordinates.
+- Tactile (flowcharts): a line whose arrowheads are `["none"]` (or any list without "start" or "end")
+  drew an arrowhead at the end; it now draws none, as in the editor.
+- Export: a failed copy or download is announced as an alert, and the Braille view and Export decide
+  with one rule (`tactileViewHasKey`) whether the braille file includes the tactile key.
 - Shared STEM image pages: "Loading STEM image…" is announced by screen readers (`role="status"`), and a
   load error is announced as an alert.
 - `package-lock.json` was out of sync with `package.json`, so `npm ci` failed.

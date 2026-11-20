@@ -252,15 +252,20 @@ try {
   await clickShare("Copy long description");
   const asText = await page.evaluate(() => window.__copied);
   check("Export: Text format copies plain text", asText.length > 0 && !asText.includes("##"), asText.slice(0, 40));
-  const radios = await page.$$(".share-toolbar__radio input");
-  await radios[1].click();
+  // Pick formats by value, not position, so reordering the formats does not break the test.
+  const pickFormat = async (value) => {
+    const radio = await page.$(`.share-toolbar__radio input[value="${value}"]`);
+    if (!radio) throw new Error(`No Export format "${value}"`);
+    await radio.click();
+  };
+  await pickFormat("markdown");
   await clickShare("Copy long description");
   check("Export: Markdown format keeps headings", (await page.evaluate(() => window.__copied)).includes("## "));
-  await radios[3].click();
+  await pickFormat("braille");
   await clickShare("Copy long description");
   const asBraille = await page.evaluate(() => window.__copied);
   check("Export: Braille format copies Unicode braille", /^[\u2800-\u28ff\s]+$/.test(asBraille) && asBraille.trim().length > 0, asBraille.slice(0, 20));
-  await radios[0].click();
+  await pickFormat("html");
   await clickShare("Copy long description");
   check("Export: HTML format copies HTML", /<h2|<p/.test(await page.evaluate(() => window.__copied)));
   await clickShare("Copy alt text");

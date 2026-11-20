@@ -1,4 +1,4 @@
-import React, { useId, useMemo, useRef } from "react";
+import React, { useId, useMemo, useRef, useState } from "react";
 import type { FlowchartData } from "../../types/types";
 import { flowchartKey } from "../../braille/tactileKey";
 import {
@@ -10,22 +10,11 @@ import {
   type TactileShape,
 } from "../../braille/tactileLayout";
 import { buildBrailleDocument } from "../../braille/document";
+import { BRF_MIME } from "../../braille/stemImage";
+import { downloadTextFile, fileNameBase } from "../exports/export-utils";
 import "./styles/Tactile.css";
 
 const STROKE = 0.7; // mm, outlines and lines
-
-function fileBase(title: string) {
-  return (title || "stem-image").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "stem-image";
-}
-
-function download(name: string, content: string, type: string) {
-  const url = URL.createObjectURL(new Blob([content], { type }));
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = name;
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 function Outline({ s }: { s: TactileShape }) {
   const common = { fill: "#fff", stroke: "#000", strokeWidth: STROKE };
@@ -79,6 +68,8 @@ type TactileProps = {
  */
 const Tactile: React.FC<TactileProps> = ({ json, title }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const [status, setStatus] = useState("");
+  const [error, setError] = useState("");
   const markerId = `tactile-arrow-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const name = title?.trim() || "";
   const key = useMemo(() => flowchartKey(json), [json]);
@@ -91,19 +82,40 @@ const Tactile: React.FC<TactileProps> = ({ json, title }) => {
   const direct = [...key.edgeLabels.entries()].filter(([, v]) => !v.keyed).map(([label]) => label);
   const orientation = scene.width > scene.height ? "landscape" : "portrait";
 
+  // Success is announced politely; a failure is an alert so it is heard at once.
+  const run = (what: string, fileName: string, save: () => void) => {
+    try {
+      save();
+      setError("");
+      setStatus(`Downloaded ${fileName}.`);
+    } catch {
+      setStatus("");
+      setError(`Could not download the ${what}. Reload the page and try again.`);
+    }
+  };
+
   const downloadSvg = () => {
-    const svg = svgRef.current;
-    if (!svg) return;
-    const copy = svg.cloneNode(true) as SVGSVGElement;
-    copy.removeAttribute("style");
-    copy.removeAttribute("class");
-    const xml = '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(copy);
-    download(`${fileBase(name)}-tactile.svg`, xml, "image/svg+xml");
+    const fileName = `${fileNameBase(name)}-tactile.svg`;
+    run("tactile graphic", fileName, () => {
+      const svg = svgRef.current;
+      if (!svg) throw new Error("The tactile graphic is not on the page.");
+      const copy = svg.cloneNode(true) as SVGSVGElement;
+      copy.removeAttribute("style");
+      copy.removeAttribute("class");
+      const xml = '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(copy);
+      downloadTextFile(fileName, xml, "image/svg+xml");
+    });
   };
 
   const downloadKey = () => {
-    const doc = buildBrailleDocument({ title: name ? `${name}: tactile graphic key` : "Tactile graphic key", key: key.entries });
-    download(`${fileBase(name)}-tactile-key.brf`, doc.brf, "text/plain;charset=us-ascii");
+    const fileName = `${fileNameBase(name)}-tactile-key.brf`;
+    run("braille key", fileName, () => {
+      const doc = buildBrailleDocument({
+        title: name ? `${name}: tactile graphic key` : "Tactile graphic key",
+        key: key.entries,
+      });
+      downloadTextFile(fileName, doc.brf, BRF_MIME);
+    });
   };
 
   return (
@@ -114,13 +126,14 @@ const Tactile: React.FC<TactileProps> = ({ json, title }) => {
         page”) on {orientation} letter paper, on swell paper or a tactile embosser.
       </p>
       {scene.overlaps > 0 && (
-        <p className="tactile__warning">
+        <p className="tactile__warning" role="alert">
           {scene.overlaps === 1 ? "Two shapes are" : `${scene.overlaps} pairs of shapes are`} too close
           together to tell apart by touch at this size. Move them apart in the editor before printing.
         </p>
       )}
 
-      <div className="tactile__page">
+      {/* Focusable and named so keyboard users can scroll a graphic wider than the screen. */}
+      <div className="tactile__page" role="region" aria-label="Tactile graphic preview" tabIndex={0}>
         <svg
           ref={svgRef}
           xmlns="http://www.w3.org/2000/svg"
@@ -181,6 +194,12 @@ const Tactile: React.FC<TactileProps> = ({ json, title }) => {
         <button type="button" className="btn btn--outline" onClick={downloadKey}>
           Download braille key (.brf)
         </button>
+        <span className="tactile__status" role="status">
+          {status}
+        </span>
+        <span className="tactile__status tactile__status--error" role="alert">
+          {error}
+        </span>
       </div>
 
       <table className="tactile__key">

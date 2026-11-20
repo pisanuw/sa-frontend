@@ -32,6 +32,18 @@
   font-weight: 600;
 }
 
+/* A solid focus ring with at least 3:1 contrast on white, for the preview toggle and pages. */
+.braille-view__preview summary:focus-visible,
+.braille-view__page pre:focus-visible {
+  outline: 3px solid var(--teal, #184c45);
+  outline-offset: 2px;
+}
+
+.braille-view__error {
+  font-weight: 600;
+  color: #a3001b;
+}
+
 .braille-view__page {
   margin: var(--s-3, 12px) 0 0;
 }
