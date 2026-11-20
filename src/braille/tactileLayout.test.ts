@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { brailleDots, brailleWidth, layoutTactileFlowchart, BRAILLE_MM } from "./tactileLayout";
+import { arrowEnds, brailleDots, brailleWidth, layoutTactileFlowchart, BRAILLE_MM } from "./tactileLayout";
 import { flowchartKey } from "./tactileKey";
 import { parseMermaidText } from "../lib/mermaidText";
 import type { FlowchartData } from "../types/types";
@@ -76,5 +76,37 @@ describe("tactile flowchart layout", () => {
       edges: [],
     });
     expect(s.overlaps).toBe(1);
+  });
+});
+
+describe("arrowheads", () => {
+  const edge = (extra: Partial<FlowchartData["edges"][number]>) => ({
+    source: "A",
+    destination: "B",
+    type: "solid",
+    ...extra,
+  });
+
+  it("draws only the ends the list names, so [] and ['none'] have no arrowhead", () => {
+    expect(arrowEnds(edge({ arrowheads: [] }))).toEqual({ start: false, end: false });
+    expect(arrowEnds(edge({ arrowheads: ["none"] }))).toEqual({ start: false, end: false });
+    expect(arrowEnds(edge({ arrowheads: ["start"] }))).toEqual({ start: true, end: false });
+    expect(arrowEnds(edge({ arrowheads: ["start", "end"] }))).toEqual({ start: true, end: true });
+  });
+
+  it("falls back to markerEnd, then to an arrow at the end, only without a list", () => {
+    expect(arrowEnds(edge({ markerEnd: { type: "arrowclosed" } }))).toEqual({ start: false, end: true });
+    expect(arrowEnds(edge({}))).toEqual({ start: false, end: true });
+  });
+
+  it("leaves the arrowhead off an ['none'] line on the graphic", () => {
+    const s = scene({
+      nodes: [
+        { id: "A", label: "A", shape: "rectangle", coordinates: [[0, 0], [40, 20]] },
+        { id: "B", label: "B", shape: "rectangle", coordinates: [[0, 200], [40, 220]] },
+      ],
+      edges: [{ source: "A", destination: "B", type: "solid", arrowheads: ["none"] }],
+    });
+    expect(s.lines.map((l) => [l.arrowStart, l.arrowEnd])).toEqual([[false, false]]);
   });
 });

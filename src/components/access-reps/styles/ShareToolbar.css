@@ -35,5 +35,10 @@
 .share-chip[disabled] { opacity: 0.5; cursor: not-allowed; }
 .share-toolbar__chips { align-items: center; }
 .share-toolbar__status { font-size: 0.9rem; font-weight: 600; color: var(--brand, #184c45); }
-.share-toolbar__status:empty { display: none; }
+.share-toolbar__status--error { color: #a3001b; }
+/* Empty live regions stay in the accessibility tree (with display: none some screen readers miss
+   the first message) but take no space. */
+.share-toolbar__status:empty {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
 .share-toolbar__body { margin-top: 14px; display: grid; gap: 8px; }

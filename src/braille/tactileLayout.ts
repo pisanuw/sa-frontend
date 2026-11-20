@@ -155,15 +155,14 @@ function place(
   return { shapes, scale: k };
 }
 
-/** Which ends carry an arrowhead, with the same rules as the editor (`normalizeArrowDirection`). */
-function arrowEnds(e: FlowchartData["edges"][number]): { start: boolean; end: boolean } {
+/**
+ * Which ends carry an arrowhead, with the same rules as the editor (`normalizeArrowDirection`):
+ * a list names the ends that have one, so `[]` and `["none"]` draw no arrowhead. Only edges
+ * without a list fall back to `markerEnd`, and then to an arrow at the end.
+ */
+export function arrowEnds(e: FlowchartData["edges"][number]): { start: boolean; end: boolean } {
   const heads = e.arrowheads;
-  if (Array.isArray(heads)) {
-    if (heads.length === 0) return { start: false, end: false };
-    if (heads.includes("start") || heads.includes("end")) {
-      return { start: heads.includes("start"), end: heads.includes("end") };
-    }
-  }
+  if (Array.isArray(heads)) return { start: heads.includes("start"), end: heads.includes("end") };
   if (e.markerEnd?.type) return { start: false, end: /arrow/i.test(e.markerEnd.type) };
   return { start: false, end: true };
 }

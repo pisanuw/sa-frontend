@@ -7,8 +7,9 @@ import React, { useMemo, useRef } from "react";
 import TreeView, { flattenTree } from "react-accessible-treeview";
 import type { FlowchartData } from "../../../types/types";
 import type { DiagramType } from "../../../arboretum/diagramTypes";
-import { isArrayType, isTreeType } from "../../../arboretum/diagramTypes";
+import { isArrayType, isDataStructure, isTreeType } from "../../../arboretum/diagramTypes";
 import { toArboretumDiagram } from "../../../arboretum/adapt";
+import { downloadTextFile, fileNameBase } from "../../exports/export-utils";
 import {
   buildTree,
   buildPositionTree,
@@ -347,6 +348,15 @@ export function canRenderBrailleLabels(type: DiagramType, data: FlowchartData): 
   });
 }
 
+/**
+ * Is the tactile view the numbered graphic with a key? True for flowcharts, and for data
+ * structures whose values are too long to print on the diagram. The Braille view and the
+ * Export braille file both use this, so they include the same key.
+ */
+export function tactileViewHasKey(type: DiagramType, data: FlowchartData): boolean {
+  return !(isDataStructure(type) && canRenderBrailleLabels(type, data));
+}
+
 type Shape = { cx: number; cy: number; text: string };
 
 const cellRadius = 30;
@@ -425,12 +435,7 @@ export function TypedTactile({ type, data, title }: Props) {
     const svg = svgRef.current;
     if (!svg) return;
     const xml = new XMLSerializer().serializeToString(svg);
-    const url = URL.createObjectURL(new Blob([xml], { type: "image/svg+xml" }));
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${(title || "tactile").toLowerCase().replace(/[^a-z0-9]+/g, "-") || "tactile"}.svg`;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadTextFile(`${fileNameBase(title, "tactile")}.svg`, xml, "image/svg+xml");
   };
 
   return (

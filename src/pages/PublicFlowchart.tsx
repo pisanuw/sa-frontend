@@ -83,11 +83,11 @@ const PublicFlowchart: React.FC = () => {
   }, [public_slug, API_URL]);
 
   if (error) {
-    return <p style={{ color: "red" }}>Error: {error}</p>;
+    return <p role="alert" style={{ color: "red" }}>Error: {error}</p>;
   }
 
   if (!data) {
-    return <p>Loading STEM image…</p>;
+    return <p role="status">Loading STEM image…</p>;
   }
 const publishedLabel = formatDateTime(data.published_at);
 

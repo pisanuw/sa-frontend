@@ -11,12 +11,14 @@ function escapeHtml(value: string): string {
     .replaceAll("'", "&#39;");
 }
 
-function normalizeFileNameBase(value: string): string {
-  return (value || "stem-image")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w-]/g, "");
+/**
+ * File name base for downloads: lowercase letters and digits joined by hyphens, so
+ * "Lab 2: Loops" becomes "lab-2-loops". Falls back when nothing is left.
+ */
+export function fileNameBase(title?: string | null, fallback = "stem-image"): string {
+  return (
+    (title ?? "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || fallback
+  );
 }
 export function sanitizeSvgForAccessibleUse(
   shortAlt: string,
@@ -227,7 +229,7 @@ export function buildPermalinkLinkedHtmlSnippet(args: LinkedHtmlArgs): string {
 
 
 export function buildSelfHostedDescriptionFileName(title: string): string {
-  return `${normalizeFileNameBase(title)}-long-description.html`;
+  return `${fileNameBase(title)}-long-description.html`;
 }
 
 import mermaid from "mermaid";
