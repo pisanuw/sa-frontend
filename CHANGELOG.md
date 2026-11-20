@@ -7,7 +7,7 @@ API contract name the matching backend release.
 ## [Unreleased]
 
 ### Added
-- CI (GitHub Actions): lint, unit tests, type check and build on every push and pull request.
+- CI (GitHub Actions): lint, unit tests, type check and build on every pull request and every push to `main`.
 - Braille: a **Braille (.brf)** representation on shared pages and in the owner's preview, and
   **Braille (.brf)** in Export. The file has the title, a transcriber's note, the alt text, the long
   description and (when the tactile view is the numbered one) the tactile graphic's key, in uncontracted
@@ -53,6 +53,8 @@ API contract name the matching backend release.
   as "aj". Line labels were numbered from 1 again on the graphic but after the shapes in the key, so the
   label "Yes" could be 1 on paper (the same as shape 1) and 6 in the key. A one-step flowchart produced
   invalid coordinates.
+- Shared STEM image pages: "Loading STEM image…" is announced by screen readers (`role="status"`), and a
+  load error is announced as an alert.
 - `package-lock.json` was out of sync with `package.json`, so `npm ci` failed.
 - The navigable list (`NavigableList`) and the Grafari results page called React hooks after an early
   return; they would crash if their data arrived after the first render.

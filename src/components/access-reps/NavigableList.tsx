@@ -259,7 +259,7 @@ useLayoutEffect(() => {
 }, [nodes.length, nodeRects, layoutLocked]); 
 
   if (!jsonData) {
-    return <div>Loading STEM image...</div>;
+    return <div role="status">Loading STEM image…</div>;
   }
 
 
