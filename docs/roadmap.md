@@ -75,8 +75,8 @@ Small fixes that every later phase depends on.
 - [x] Backend: `backend/jobs/worker.py` imports the image pipeline (torch, YOLO, Google Vision) at
       module load, so chart and summary jobs, and the test suite, need the full machine-learning
       install. Import it only when a flowchart upload runs.
-- [x] CI on both repositories (GitHub Actions). Frontend: lint, type check, unit tests, build.
-      Backend: unit tests on Python 3.12 without the ML stack.
+- [x] CI on both repositories (GitHub Actions), on pull requests and pushes to `main`. Frontend:
+      lint, type check, unit tests, build. Backend: unit tests on Python 3.12 without the ML stack.
 - [ ] Next: run the existing axe script (`e2e/a11y.mjs`) in CI against a preview build, and fail
       on new serious or critical violations.
 - [ ] Next: per-account upload quota (the README's first known gap), before any wider rollout.
@@ -108,14 +108,18 @@ alt text, the long description and, for flowcharts, the tactile graphic's key.
       across lines unless longer than a line, form feed between pages.
 - [x] **Braille view** on shared pages and in the editor's representation browser, with a preview for
       sighted proofreaders and a `.brf` download. **Braille (.brf)** added to Export.
-- [ ] Contracted (Grade 2) UEB through liblouis on the backend (`POST /braille`), since most adult
-      readers read contracted braille. Liblouis is LGPL-2.1 and runs as a separate library, so it
-      does not change this project's license.
+- [ ] Contracted (Grade 2) UEB through liblouis (`en-ueb-g2.ctb`), offered as a choice on the
+      Braille view and in Export, since most adult readers read contracted braille (asked for in
+      the braille pull request's review). Where liblouis runs is open (decision 2): on the backend
+      (`POST /braille`), or compiled to WebAssembly in the browser, which keeps braille working with
+      no account and offline but adds about 1–2 MB to pages that use it. Liblouis is LGPL-2.1 and
+      runs as a separate library, so it does not change this project's license.
 - [ ] Tactile PDF for embossers (ViewPlus and others) with the braille key on its own page, as the
       BANA tactile graphics guidelines recommend.
-- [x] Sonification: a written "What you will hear" description beside the play button (number of
-      notes, what pitch stands for, highest, lowest, start, end and direction), built from the same
-      spec the player uses. The player's messages are now shown and announced.
+- [x] Sonification: a written "What you will hear" description beside the play button (the spoken
+      introduction, number of notes and length, what pitch stands for, highest, lowest, start, end,
+      direction and rows left out), built from the same spec the player uses. Blank values are no
+      longer played as 0. The player's messages are now shown and announced once.
 - [ ] Review by a certified braille transcriber and a tactile graphics specialist before calling
       the output production-ready.
 
@@ -134,12 +138,16 @@ the same `.brf`.
       converted stays as LaTeX, and the note says so.
 - [x] MathJax is served from this site (`mathjaxAssets` in `vite.config.ts`), not a CDN, so a
       campus can host the whole thing and readers' browsers make no outside requests for math.
-- [x] TeX that could add links, classes or styles (`\href`, `\style`, `\class`, …) is shown as
-      source and never reaches MathJax, and MathJax's `ui/safe` filter is on as well, because
-      anyone (including guests) can publish a description.
+- [x] TeX that could add links, classes, styles or oversized boxes (`\href`, `\style`, `\class`,
+      `\bbox`, …) is shown as source and never reaches MathJax, and MathJax's `ui/safe` filter is on
+      as well, because anyone (including guests) can publish a description.
 - [ ] Math in alt text, node labels and chart titles on screen (the braille file already handles
       them); plain-text and HTML exports with the spoken form.
 - [ ] Review of the Nemeth output and the switch indicators by a certified Nemeth transcriber.
+- [ ] Divide expressions longer than a braille line where Nemeth prefers (before comparison signs,
+      then operation signs); today they are divided at the end of the line.
+- [ ] Nemeth for more TeX packages in the braille file (`cancel`, `boldsymbol`, `color`, `mhchem`);
+      today those formulas are drawn on the page but written as LaTeX in the file.
 - [ ] Optional later: picture of an equation → LaTeX, through the same opt-in AI consent as chart
       images.
 
@@ -154,8 +162,9 @@ changes only the frontend, so another choice means replacing that one pull reque
 
 Recommendation: MathJax 4, lazy-loaded, because exploration and braille come tested.
 
-Cost as built: about 10 MB of MathJax files in the deployed site (all speech languages are kept so
-MathJax's menu can switch them), fetched only by pages that show math. The site's own math code
+Cost as built: about 21 MB of MathJax files in the deployed site (all speech languages, and the SVG
+font as well as the CHTML one, are kept so MathJax's menu can switch them), of which a page fetches
+only what it uses, and only when it shows math. The site's own math code
 adds a few kilobytes plus chunks loaded on demand. MathJax 4.1.3 depends on a release candidate of
 the Speech Rule Engine (5.0.0-rc.4); `package.json` pins that exact version so the braille file
 and MathJax use the same rules.
@@ -211,9 +220,11 @@ Turns the tool into something a campus can run its accessibility service on.
 
 1. Send this work to `stem-accessibility` as small pull requests: done, one per item (these
    pull requests).
-2. Default braille grade for downloads. Recommendation: uncontracted UEB now (it is what we can
-   verify in the browser, and is often preferred for code and technical text), contracted UEB from
-   liblouis once the backend route exists, with a choice on the page.
+2. Default braille grade for downloads, and where contracted braille is made. Recommendation:
+   uncontracted UEB now (it is what we can verify in the browser, and is often preferred for code
+   and technical text), then contracted UEB from liblouis with a choice on the page. Liblouis can
+   run on the backend (`POST /braille`; needs the backend for every download) or in the browser as
+   WebAssembly (no account or server needed, works offline; about 1–2 MB more to load).
 3. Math library: see the table in Phase 2. Recommendation: MathJax 4, which the math pull
    request uses.
 4. Which campus and which course pilots Phase 4 first, and who at the disability resource office
