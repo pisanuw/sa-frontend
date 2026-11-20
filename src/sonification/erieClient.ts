@@ -4,32 +4,40 @@
 import * as Erie from "erie-web";
 import type { ParsedDataset, SonificationConfig } from "../types/types";
 
+/** Thrown when no row has a number to play, e.g. the wrong column is chosen. */
+export class NoPlayableRowsError extends Error {}
+
+const isBlank = (v: unknown) => v === null || v === undefined || String(v).trim() === "";
+
+/** Rows with at least one non-blank cell (Papaparse often gives an empty one at the end). */
+function dataRows(dataset: ParsedDataset) {
+  return dataset.rows.filter((row) => Object.values(row ?? {}).some((v) => !isBlank(v)));
+}
+
+/** How many rows hold any data; rows left out of the sonification are counted against this. */
+export function countDataRows(dataset: ParsedDataset): number {
+  return dataRows(dataset).length;
+}
+
+// A blank cell has no value. Number(null) and Number("") are 0, which would play a blank as a
+// low note, so blanks become NaN and the row is left out.
+const toNumber = (raw: unknown) =>
+  typeof raw === "number" ? raw : isBlank(raw) ? NaN : Number(raw);
+
 // Helper: sanitize rows for Erie
 function buildCleanRows(
   dataset: ParsedDataset,
   valueField: string,
   timeField?: string | null
 ) {
-  return dataset.rows
-    // 1) Drop completely empty rows (Papaparse often gives one at the end)
-    .filter((row) => {
-      const vals = Object.values(row ?? {});
-      return vals.some(
-        (v) =>
-          v !== null &&
-          v !== undefined &&
-          String(v).trim() !== ""
-      );
-    })
+  return dataRows(dataset)
     // 2) Map to numeric values + synthetic index
     .map((row, index) => {
-      const rawValue = (row as any)[valueField];
-      const numericValue = typeof rawValue === "number" ? rawValue : Number(rawValue);
+      const numericValue = toNumber((row as any)[valueField]);
 
       let numericTime: number;
       if (timeField) {
-        const rawTime = (row as any)[timeField];
-        numericTime = typeof rawTime === "number" ? rawTime : Number(rawTime);
+        numericTime = toNumber((row as any)[timeField]);
       } else {
         // If no time column selected, just use the row index as time
         numericTime = index;
@@ -66,10 +74,9 @@ const timeField = config.timeColumn || null;
   }
 
   const cleanRows = buildCleanRows(dataset, valueField, timeField);
-console.log("[CleanRows]", cleanRows);
 
   if (!cleanRows.length) {
-    throw new Error("No valid numeric rows found for sonification.");
+    throw new NoPlayableRowsError("No valid numeric rows found for sonification.");
   }
 
   // 2) Compute value domain [min, max] for pitch scaling
@@ -129,11 +136,11 @@ console.log("[CleanRows]", cleanRows);
     config: {},
   };
 
-  console.log("[Erie] Spec built:", spec);
   return spec;
 }
 
-// Compile & play using Erie’s compiler + player APIs
+// Compile & play using Erie’s compiler + player APIs. Resolves when playback has finished, so the
+// player can say "Playing…" for as long as it plays.
 // https://see-mike-out.github.io/erie-documentation/docs/how-to-use/compiler-api.html
 // https://see-mike-out.github.io/erie-documentation/docs/how-to-use/player.html
 export async function playSonificationWithErie(
@@ -150,10 +157,10 @@ export async function playSonificationWithErie(
   // ✅ SequenceStream has its own play method (often named playQueue)
   if (typeof sequence.playQueue === "function") {
     console.log("[ErieClient] Calling sequence.playQueue()…");
-    sequence.playQueue();
+    await sequence.playQueue();
   } else if (typeof sequence.play === "function") {
     console.log("[ErieClient] sequence.playQueue() missing, falling back to sequence.play()…");
-    sequence.play();
+    await sequence.play();
   } else {
     console.error("[ErieClient] No play/playQueue method found on SequenceStream", sequence);
     throw new Error("Erie SequenceStream has no play method.");

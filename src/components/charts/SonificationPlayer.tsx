@@ -11,27 +11,33 @@ interface Props {
 }
 
 export function SonificationPlayer({ dataset, config, disabled }: Props) {
-  const [status, setStatus] = useState<"idle" | "playing" | "error">("idle");
-  const [message, setMessage] = useState<string | null>(null);
+  const [playing, setPlaying] = useState(false);
+  // "Playing…" goes to a polite status and problems to an alert. The button label stays the
+  // same, so screen readers announce the state once.
+  const [status, setStatus] = useState("");
+  const [error, setError] = useState("");
   const headingId = useId();
   // The same information in words, for readers who cannot hear the sound.
   const description = useMemo(() => describeSonification(dataset, config), [dataset, config]);
 
   const handlePlay = async () => {
+    if (playing) return;
     if (!dataset || !config.valueColumn) {
-      setMessage("Upload a CSV and choose a value column first.");
+      setError("Upload a CSV and choose a value column first.");
       return;
     }
+    setError("");
+    setPlaying(true);
+    setStatus("Playing…");
     try {
-      setStatus("playing");
-      setMessage("Playing.");
       await playSonificationWithErie(dataset, config);
-      setStatus("idle");
-      setMessage(null);
+      setStatus("");
     } catch (e) {
       console.error("[SonificationPlayer] Error:", e);
-      setStatus("error");
-      setMessage("Something went wrong while playing audio.");
+      setStatus("");
+      setError("Something went wrong while playing audio.");
+    } finally {
+      setPlaying(false);
     }
   };
 
@@ -44,12 +50,22 @@ export function SonificationPlayer({ dataset, config, disabled }: Props) {
           <p>{description}</p>
         </>
       )}
-      <button type="button" onClick={handlePlay} disabled={disabled || status === "playing"}>
-        {status === "playing" ? "Playing…" : "Play sonification"}
+      {/* aria-disabled while playing (not disabled) keeps keyboard focus on the button. */}
+      <button
+        type="button"
+        onClick={handlePlay}
+        disabled={disabled}
+        aria-disabled={playing || undefined}
+      >
+        Play sonification
       </button>
-      <p className="hint" role="status" aria-live="polite">
-        {message ?? "Audio is generated in your browser using Erie."}
-      </p>
+      <p className="hint">Audio is generated in your browser using Erie. Press X to stop.</p>
+      <div className="hint" role="status">
+        {status}
+      </div>
+      <div className="sonification__error" role="alert">
+        {error}
+      </div>
     </section>
   );
 }

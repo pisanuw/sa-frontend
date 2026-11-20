@@ -23,12 +23,13 @@ API contract name the matching backend release.
 - Long description builder (`/ld`): saving a link with an image now needs an account (text-only saves do
   not). The page says so before you finish, with a sign-in link that opens in a new tab so your text is not
   lost, and sends your session token so the image is saved under your account.
-- Charts: **What you will hear**, a written description of the sonification beside the play button (how
-  many notes, what pitch stands for, highest and lowest, start and end, rising or falling), for readers
-  who cannot hear it. Built from the same spec the player uses (`src/sonification/describe.ts`). The
-  player's messages ("Upload a CSV and choose a value column first", playback errors) were never shown;
-  they now appear in a status line that screen readers announce, and the player no longer logs on every
-  render.
+- Charts: **What you will hear**, a written description of the sonification beside the play button (the
+  spoken introduction, how many notes and over how long, what pitch stands for, highest and lowest, start
+  and end, rising or falling, and how many rows were left out), for readers who cannot hear it. Built from
+  the same spec the player uses (`src/sonification/describe.ts`), including the stream length. When there
+  is nothing to play it says why. The player's messages were never shown: "Playing…" is now a status that
+  lasts until the sound ends, and problems are alerts. The button keeps its label and keyboard focus while
+  playing. The player no longer logs on every render.
 
 ### Changed
 - CSV upload reads ordinary CSV files: a header row, any column names, blank cells, quoted commas, and
@@ -36,6 +37,8 @@ API contract name the matching backend release.
   Previously only one fixed layout worked and everything else produced an empty dataset.
 
 ### Fixed
+- Sonification: a blank value was played as 0 (a low note) instead of being left out, and "Playing…"
+  ended as soon as the sound started because the player did not wait for it to finish.
 - Column auto-mapping: the line preset no longer takes the time column as the value (which also drove the
   sonification's pitch), category presets no longer keep a stale time column, and columns chosen for an
   earlier file or preset are cleared. Sonification with no time column now uses row order.
