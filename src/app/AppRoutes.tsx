@@ -20,6 +20,8 @@ import PublicRepoPage from "../pages/PublicRepoPage";
 import Dashboard from "../pages/Dashboard";
 import AccountPage from "../pages/AccountPage";
 import CreatePage from "../pages/CreatePage";
+import SlideDeckUploadPage from "../pages/SlideDeckUploadPage";
+import SlideDeckResultsPage from "../pages/SlideDeckResultsPage";
 import DiagramEditorPage from "../pages/DiagramEditorPage";
 import TryPage from "../pages/TryPage";
 import PermalinkContent from "../components/access-reps/PermalinkContent";
@@ -65,6 +67,14 @@ export default function AppRoutes() {
       <Route path="/p/:public_slug/json" element={<PublicFlowchartJsonPage />} />
 
       {/* Private (auth required) */}
+      <Route
+        path="/decks/new"
+        element={<RequireAuth><SlideDeckUploadPage /></RequireAuth>}
+      />
+      <Route
+        path="/decks/:deckId"
+        element={<RequireAuth><SlideDeckResultsPage /></RequireAuth>}
+      />
       <Route
         path="/dashboard"
         element={
