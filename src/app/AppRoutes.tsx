@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Link } from "react-router-dom";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 
@@ -146,7 +146,8 @@ function NotFound() {
       <h1>Page not found</h1>
       <p>The page you requested does not exist.</p>
       <p>
-        Go back to <a href="/">Home</a>.
+        {/* Underlined so the link is not told apart from the sentence by colour alone (WCAG 1.4.1). */}
+        Go back to <Link to="/" style={{ textDecoration: "underline" }}>Home</Link>.
       </p>
     </div>
   );

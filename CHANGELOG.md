@@ -33,6 +33,8 @@ API contract name the matching backend release.
 - Column auto-mapping: the line preset no longer takes the time column as the value (which also drove the
   sonification's pitch), category presets no longer keep a stale time column, and columns chosen for an
   earlier file or preset are cleared. Sonification with no time column now uses row order.
+- Page not found: the Home link is underlined, so it is not told apart from the sentence by color alone
+  (WCAG 1.4.1, axe `link-in-text-block`), and it goes home without reloading the app.
 
 ## [0.3.0] — 2026-10-11
 
