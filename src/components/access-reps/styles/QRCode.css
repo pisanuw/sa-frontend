@@ -51,7 +51,7 @@
 }
 
 .ld-qr-button:hover {
-  background-color: #e46f14;
+  background-color: var(--accent-hover);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   transform: translateY(-1px);
 }

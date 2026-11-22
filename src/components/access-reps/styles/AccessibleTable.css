@@ -20,7 +20,7 @@ styled-table {
   }
   
   .styled-table thead tr {
-    background-color: #009879;
+    background-color: #00755e;
     color: #ffffff;
   }
   
@@ -37,4 +37,3 @@ styled-table {
     flex-direction: column; /* Stack items vertically */
     gap: 2rem; /* Adds space between diagram items */
   }
-  
