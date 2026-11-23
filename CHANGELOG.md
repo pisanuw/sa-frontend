@@ -7,6 +7,7 @@ API contract name the matching backend release.
 ## [Unreleased]
 
 ### Added
+- CI (GitHub Actions): lint, unit tests, type check and build on every pull request and every push to `main`.
 - Charts: a **Navigable chart** view built with [Olli](https://github.com/umwelt-data/olli) (BSD 3-Clause)
   that lets screen reader users explore a chart as an outline and open its data as a table. Loaded on demand.
 - Charts: a **Data table** with the uploaded values as a real HTML table.
@@ -32,6 +33,9 @@ API contract name the matching backend release.
   playing. The player no longer logs on every render.
 
 ### Changed
+- Lint: `vendor/` (the Arboretum submodule) is no longer linted; `any` is a warning rather than an
+  error; unused values named `_…` and props dropped with `{ a, ...rest }` are allowed. `npm run lint` now
+  passes (warnings remain).
 - CSV upload reads ordinary CSV files: a header row, any column names, blank cells, quoted commas, and
   title lines above the table. It reports how many rows and columns it loaded, or why it found none.
   Previously only one fixed layout worked and everything else produced an empty dataset.
@@ -39,9 +43,16 @@ API contract name the matching backend release.
 ### Fixed
 - Sonification: a blank value was played as 0 (a low note) instead of being left out, and "Playing…"
   ended as soon as the sound started because the player did not wait for it to finish.
+- Shared STEM image pages: "Loading STEM image…" is announced by screen readers (`role="status"`), and a
+  load error is announced as an alert.
+- `package-lock.json` was out of sync with `package.json`, so `npm ci` failed.
+- The navigable list (`NavigableList`) and the Grafari results page called React hooks after an early
+  return; they would crash if their data arrived after the first render.
 - Column auto-mapping: the line preset no longer takes the time column as the value (which also drove the
   sonification's pitch), category presets no longer keep a stale time column, and columns chosen for an
   earlier file or preset are cleared. Sonification with no time column now uses row order.
+- Page not found: the Home link is underlined, so it is not told apart from the sentence by color alone
+  (WCAG 1.4.1, axe `link-in-text-block`), and it goes home without reloading the app.
 
 ## [0.3.0] — 2026-10-11
 

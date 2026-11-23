@@ -36,7 +36,16 @@
 .create-radio__help { grid-column: 2; font-size: 0.9rem; color: var(--muted, #555); }
 
 .create-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-.create-actions .btn[disabled] { opacity: 0.55; cursor: not-allowed; }
+.create-actions .btn:disabled {
+  background: #bd580a;
+  opacity: 1;
+  cursor: not-allowed;
+}
+.create-actions .btn--outline:disabled {
+  background: var(--white);
+  color: #5e7873;
+  border-color: #5e7873;
+}
 .create-why { margin: 0; font-size: 0.9rem; color: var(--muted, #555); }
 
 .create-panel {

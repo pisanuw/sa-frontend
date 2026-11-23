@@ -1,5 +1,5 @@
 import { useEffect, useId, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
 import { apiFetch, apiUpload, publicFetch } from "../lib/api";
 import type { FlowchartData } from "../types/types";
@@ -274,6 +274,10 @@ export default function CreatePage() {
     <div className="create-page">
       <div className="create-shell">
         <h1 className="create-title">Create a STEM image</h1>
+        <p>
+          <Link to="/decks/new">Upload a slide deck (PDF)</Link> to extract multiple
+          diagrams at once.
+        </p>
         <p className="create-subtitle">
           {isChart
             ? "Name it, then explore data from a CSV file or a chart picture as a table, a navigable outline, and sound."

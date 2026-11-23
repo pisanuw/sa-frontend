@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Link } from "react-router-dom";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 
@@ -20,6 +20,8 @@ import PublicRepoPage from "../pages/PublicRepoPage";
 import Dashboard from "../pages/Dashboard";
 import AccountPage from "../pages/AccountPage";
 import CreatePage from "../pages/CreatePage";
+import SlideDeckUploadPage from "../pages/SlideDeckUploadPage";
+import SlideDeckResultsPage from "../pages/SlideDeckResultsPage";
 import DiagramEditorPage from "../pages/DiagramEditorPage";
 import TryPage from "../pages/TryPage";
 import PermalinkContent from "../components/access-reps/PermalinkContent";
@@ -65,6 +67,14 @@ export default function AppRoutes() {
       <Route path="/p/:public_slug/json" element={<PublicFlowchartJsonPage />} />
 
       {/* Private (auth required) */}
+      <Route
+        path="/decks/new"
+        element={<RequireAuth><SlideDeckUploadPage /></RequireAuth>}
+      />
+      <Route
+        path="/decks/:deckId"
+        element={<RequireAuth><SlideDeckResultsPage /></RequireAuth>}
+      />
       <Route
         path="/dashboard"
         element={
@@ -136,7 +146,8 @@ function NotFound() {
       <h1>Page not found</h1>
       <p>The page you requested does not exist.</p>
       <p>
-        Go back to <a href="/">Home</a>.
+        {/* Underlined so the link is not told apart from the sentence by colour alone (WCAG 1.4.1). */}
+        Go back to <Link to="/" style={{ textDecoration: "underline" }}>Home</Link>.
       </p>
     </div>
   );

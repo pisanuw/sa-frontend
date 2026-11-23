@@ -1,11 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
 
 :root {
-  /* Brand colors (kept as-is) */
+  /* Brand colors */
   --white: #fff;
   --cream: #faf3e0;
-  --orange: #ffa726;
-  --deep-orange: #f58025;
+  --orange: #914207;
+  --deep-orange: #b35309;
   --peach: #f4a261;
   --black: #1b1b1b;
   --teal: #184c45;
@@ -44,5 +44,5 @@
   --container: 1200px;
 
   /* Focus ring */
-  --focus: rgba(24, 76, 69, 0.45); /* teal-ish focus */
+  --focus: var(--teal);
 }
