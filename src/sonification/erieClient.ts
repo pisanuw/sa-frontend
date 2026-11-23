@@ -143,6 +143,22 @@ const timeField = config.timeColumn || null;
 // player can say "Playing…" for as long as it plays.
 // https://see-mike-out.github.io/erie-documentation/docs/how-to-use/compiler-api.html
 // https://see-mike-out.github.io/erie-documentation/docs/how-to-use/player.html
+let currentSequence: any = null;
+
+/**
+ * Stop whatever is playing: Erie's sequence, and the browser's speech. For when playback has not
+ * finished on its own (stopSonification is safe to call when nothing plays).
+ */
+export function stopSonification(): void {
+  try {
+    currentSequence?.stop?.();
+  } catch (e) {
+    console.error("[ErieClient] stop failed:", e);
+  }
+  if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+  currentSequence = null;
+}
+
 export async function playSonificationWithErie(
   dataset: ParsedDataset,
   config: SonificationConfig
@@ -153,6 +169,7 @@ export async function playSonificationWithErie(
   console.log("[ErieClient] Building audio graph via compileAudioGraph...");
   const sequence: any = await (Erie as any).compileAudioGraph(spec);
   console.log("[ErieClient] SequenceStream:", sequence);
+  currentSequence = sequence;
 
   // ✅ SequenceStream has its own play method (often named playQueue)
   if (typeof sequence.playQueue === "function") {

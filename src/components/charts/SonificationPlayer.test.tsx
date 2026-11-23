@@ -2,16 +2,17 @@
 // The player announces its state once: the button label stays "Play sonification", "Playing…"
 // is a polite status for as long as the sound plays, and failures are alerts.
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 vi.mock("../../sonification/erieClient", async (importOriginal) => ({
   ...(await importOriginal<typeof import("../../sonification/erieClient")>()),
   playSonificationWithErie: vi.fn(),
+  stopSonification: vi.fn(),
 }));
 vi.mock("erie-web", () => ({}));
 
-import { playSonificationWithErie } from "../../sonification/erieClient";
+import { playSonificationWithErie, stopSonification } from "../../sonification/erieClient";
 import { SonificationPlayer } from "./SonificationPlayer";
 
 const dataset = { columns: ["v"], rows: [{ v: 1 }, { v: 3 }] };
@@ -20,6 +21,7 @@ const config = { preset: "line" as const, valueColumn: "v" };
 afterEach(() => {
   cleanup();
   vi.mocked(playSonificationWithErie).mockReset();
+  vi.mocked(stopSonification).mockReset();
 });
 
 describe("SonificationPlayer", () => {
@@ -60,5 +62,42 @@ describe("SonificationPlayer", () => {
     render(<SonificationPlayer dataset={dataset} config={config} />);
     expect(screen.getByRole("heading", { name: "What you will hear" })).toBeTruthy();
     expect(screen.getByText(/Then you will hear 2 short notes/)).toBeTruthy();
+  });
+
+  it("tells Tab users how to stop it: the hint describes the button", () => {
+    render(<SonificationPlayer dataset={dataset} config={config} />);
+    const button = screen.getByRole("button", { name: "Play sonification" });
+    const hint = document.getElementById(button.getAttribute("aria-describedby") ?? "");
+    expect(hint?.textContent).toMatch(/Press X to stop/);
+  });
+
+  it("is usable again after X, even when playback never settles (speech that failed)", async () => {
+    vi.mocked(playSonificationWithErie).mockReturnValue(new Promise<void>(() => {}));
+    const user = userEvent.setup();
+    render(<SonificationPlayer dataset={dataset} config={config} />);
+    const button = screen.getByRole("button", { name: "Play sonification" });
+    await user.click(button);
+    expect(button.getAttribute("aria-disabled")).toBe("true");
+
+    fireEvent.keyPress(window, { key: "x", code: "KeyX", charCode: 120 });
+    await vi.waitFor(() => expect(screen.getByRole("status").textContent).toBe("Stopped."));
+    expect(button.getAttribute("aria-disabled")).toBeNull();
+    expect(screen.getByRole("alert").textContent).toBe("");
+
+    vi.mocked(playSonificationWithErie).mockResolvedValue(undefined);
+    await user.click(button); // and it plays again
+    expect(playSonificationWithErie).toHaveBeenCalledTimes(2);
+  });
+
+  it("stops waiting after its time limit, stops the sound and says so", async () => {
+    vi.mocked(playSonificationWithErie).mockReturnValue(new Promise<void>(() => {}));
+    const user = userEvent.setup();
+    render(<SonificationPlayer dataset={dataset} config={config} playbackLimitMs={50} />);
+    const button = screen.getByRole("button", { name: "Play sonification" });
+    await user.click(button);
+    await vi.waitFor(() => expect(screen.getByRole("alert").textContent).toMatch(/did not finish playing/));
+    expect(stopSonification).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("status").textContent).toBe("");
+    expect(button.getAttribute("aria-disabled")).toBeNull();
   });
 });
